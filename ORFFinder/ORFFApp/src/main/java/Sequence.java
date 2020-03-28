@@ -3,6 +3,8 @@ import java.util.ArrayList;
 public class Sequence {
 
 
+    static int totalCompletedORFs = 0;
+
     ArrayList<ORFBaby> ActiveORFBabyMap;
     ArrayList<ORF> CompletedORFMap;
     int sequenceID;
@@ -10,8 +12,17 @@ public class Sequence {
 
     public Sequence(int sequenceID) {
         this.sequenceID = sequenceID;
-        ActiveORFBabyMap = new  ArrayList<ORFBaby>();
+        ActiveORFBabyMap = new ArrayList<ORFBaby>();
         CompletedORFMap = new ArrayList<ORF>();
+    }
+
+    public static void addTotalCompletedORFCount(int amount) {// todo rename
+        totalCompletedORFs += amount; // todo rename
+
+    }
+
+    public static int getTotalCompletedCount() {// todo rename
+        return totalCompletedORFs; // todo rename
     }
 
     public void addORFBaby(ORFBaby orfBaby) {
@@ -36,10 +47,14 @@ public class Sequence {
 
         // remove inactives (cant do in other loop, derp)
         for (Object orfBaby : inactives) {
-
+            // System.out.println(orfBaby);  //
             ActiveORFBabyMap.remove(orfBaby);
         }
 
+    }
+
+    public int getSequenceID() {
+        return sequenceID;
     }
 
     @Override
@@ -51,4 +66,9 @@ public class Sequence {
         sb.append('}');
         return sb.toString();
     }
+
+    public int getCompletedORFCount() {
+        return CompletedORFMap.size();
+    }
+
 }

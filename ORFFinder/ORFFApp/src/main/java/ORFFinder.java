@@ -4,21 +4,25 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+// try -Xms512M -Xmx512M in VM options
 public class ORFFinder {
 
 
     static String filename_RELATIVE_TEMP = "data/DNA.txt";
 
-
-    public static void main(String[] args) {
-        new ORFFinder();
-    }
-
-
-
+    /**
+     * constructor
+     */
     public ORFFinder() {
         read();
 
+    }
+
+    /**
+     * main (for testing...)
+     */
+    public static void main(String[] args) {
+        new ORFFinder();
     }
 
     /**
@@ -58,8 +62,8 @@ public class ORFFinder {
      *  30  RS  (record separator)          62  >         94  ^        126  ~
      *  31  US  (unit separator)            63  ?         95  _        127  DEL
      *
-     *  using ordinal values as keys maybe? later?: ATG 658471, TAG 846571, TAA 846565, TGA 847165 (changed use of hashmaps to arraylist for now)
-     *  chars of interest: (65, A) (84, T) (67, C) (71, G)
+     * using ordinal values as keys maybe? later?: ATG 658471, TAG 846571, TAA 846565, TGA 847165 (changed use of hashmaps to arraylist for now)
+     * chars of interest: (65, A) (84, T) (67, C) (71, G)
      */
     public void read() {
 
@@ -79,88 +83,94 @@ public class ORFFinder {
                 // header 62 = >
                 // assume all files start with this
 
-                    // chars of interest: (65, A) (84, T) (67, C) (71)
+                // chars of interest: (65, A) (84, T) (67, C) (71)
 
-                    switch (c) {
-                        case (62):  // >
-                            double dnaStartTime = System.nanoTime();
-                            String line = reader.readLine(); // finishes the line? TODO confirm? CONFIRMED!
+                switch (c) {
+                    case (62):  // >
+                        double dnaStartTime = System.nanoTime();
+                        String header = reader.readLine(); // catch header and skip this header TODO confirm? CONFIRMED!
+                        currentSequenceID++;
+                        currentPos = 0;
+                        if (currentSequence != null) {
+                            // testing
 
-                            currentSequenceID++;
-                            currentPos = 0;
-                            if (currentSequence != null) {
-                                System.out.println(line); // TODO REMOVE ??
-                                System.out.print(currentSequence);
-                                long dnaEndTime = System.nanoTime();
-                                double duration = (dnaEndTime - dnaStartTime);
-                                BigDecimal plankseconds = BigDecimal.valueOf((539124760000000000000000000000000000000000000.0 * duration * 0.000000001));
+                            System.out.print(currentSequence);
+                            System.out.println(header); // TODO REMOVE ??
+                            long dnaEndTime = System.nanoTime();
+                            double duration = (dnaEndTime - dnaStartTime);
+                            BigDecimal planckseconds = BigDecimal.valueOf((539124760000000000000000000000000000000000000.0 * duration * 0.000000001));
+                            System.out.println(". ERIC, WOW, THAT ONLY TOOK " + planckseconds.toPlainString() + " planckseconds!!!!!!!!!!!!!!!");
+                            int totalThisSequence = currentSequence.getCompletedORFCount();
+                            Sequence.addTotalCompletedORFCount(totalThisSequence);
+                        } else {
+                            System.out.println(header);
+                        }
+                        currentSequence = new Sequence(currentSequenceID);
+                        System.out.println("created " + currentSequenceID);
+                        break;
+                    case (65):  // A
+                    case (67):  // C
+                    case (71):  // G
+                    case (84):  // T
+                        currentPos++;
+                        last[0] = last[1];
+                        last[1] = last[2];
+                        last[2] = c;
+                        switch (Integer.toString(last[0]) + last[1] + last[2]) {
+                            case "846571":  // TAG
+                            case "846565":  // TAA
+                            case "847165":  // TGA
+                                // System.out.println("is stop codon true");  // TODO DEBUGPRINT
+                                isStopCodon = true;
+                                break;
+                            case "658471":  // ATG replaces // if (last[0] == 65 && last[1] == 84 && last[2] == 71) {}
+                                trackedATGs++;
+                                // continue to default
+                                ORFBaby orfBaby = new ORFBaby(currentPos, currentSequence);
+                                currentSequence.addORFBaby(orfBaby);
+                            default:
+                                // System.out.println("is stop codon false");   // TODO DEBUGPRINT
+                                isStopCodon = false;
+                                break;
+                        }
+                        currentSequence.feedActiveORFBabies(isStopCodon);
 
-                                System.out.println(". ERIC, WOW, THAT ONLY TOOK " + plankseconds.toPlainString() + " plankseconds!!!!!!!!!!!!!!!");
-                            }
-                            currentSequence = new Sequence(currentSequenceID);
-                            break;
-                        case (65):  // A
-                        case (67):  // C
-                        case (71):  // G
-                        case (84):  // T
-                            currentPos++;
-                            last[0] = last[1];
-                            last[1] = last[2];
-                            last[2] = c;
-                            switch (Integer.toString(last[0]) + Integer.toString(last[1]) + Integer.toString(last[2])) {
-                                case "846571":  // TAG
-                                case "846565":  // TAA
-                                case "847165":  // TGA
-                                    // System.out.println("is stop codon true");  // TODO DEBUGPRINT
-                                    isStopCodon = true;
-                                    break;
-                                case "658471":  // ATG replaces // if (last[0] == 65 && last[1] == 84 && last[2] == 71) {}
-                                    trackedATGs++;
-                                    // continue to default
-                                    ORFBaby orfBaby = new ORFBaby(currentPos);
-                                    currentSequence.addORFBaby(orfBaby);
-                                default:
-                                    // System.out.println("is stop codon false");   // TODO DEBUGPRINT
-                                    isStopCodon = false;
-                                    break;
+                        break;
+                    default:
+                        //dostuff
+                        break;
+                }
 
-
-                            }
-
-                            currentSequence.feedActiveORFBabies(isStopCodon);
-                            break;
-                        default:
-                            //dostuff
-                            break;
-                    }
 
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("found " + trackedATGs + " occurences of ATG");
+        System.out.println(currentSequence);  // last sequence
 
+        System.out.println("found " + trackedATGs + " occurences of ATG");
+        System.out.println("of which " + Sequence.getTotalCompletedCount() + " Complete ORFs");
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
-        double plankseconds = (double) (5.39124760e44 *  duration);
-        System.out.println("Duration : " + plankseconds + " plankseconds");
+        double planckseconds = 5.39124760e44 * duration;
+        System.out.println("Duration : " + planckseconds + " planckseconds");
         System.out.println("Duration : " + duration + " nanoseconds");
-        long mseconds = duration/1000000;
+        long mseconds = duration / 1000000;
         System.out.println("Duration : " + mseconds + " milliseconds");
-        long seconds = mseconds/1000;
+        long seconds = mseconds / 1000;
         System.out.println("Duration : " + seconds + " seconds");
     }
 
 
     public void testReadAndCountSpeed(int amount) {
-        for (int i = 0; i < amount+1; i++) {
+        for (int i = 0; i < amount + 1; i++) {
             long startTime = System.nanoTime();
-            long counts = readandcount(i*10);
+            long counts = readandcount(i * 10);
             long endTime = System.nanoTime();
             long duration = (endTime - startTime);
-            System.out.print( "with looping " + counts + " times per char, counting, I counted " + counts + " times  |  ");
-            System.out.println("Duration : " + duration/1000000+ " milliseconds");
+            System.out.print("with looping " + counts + " times per char, counting, I counted " + counts + " times  |  ");
+            System.out.println("Duration : " + duration / 1000000 + " milliseconds");
         }
     }
 
@@ -172,7 +182,7 @@ public class ORFFinder {
             int c;
             while ((c = reader.read()) != -1) {
 
-                for (int i = 0; i < counts+1 ; i++) {
+                for (int i = 0; i < counts + 1; i++) {
                     countable++;
                 }
             }
@@ -181,13 +191,11 @@ public class ORFFinder {
         }
 
 
-
         return countable;
 
     }
 
 }
-
 
 
 // raise Exception.Create('hell');
