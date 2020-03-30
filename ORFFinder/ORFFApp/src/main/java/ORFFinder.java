@@ -18,7 +18,6 @@ public class ORFFinder   {
      * constructor
      */
     public ORFFinder() {
-        read();
 
     }
 
@@ -26,7 +25,9 @@ public class ORFFinder   {
      * main (for testing...)
      */
     public static void main(String[] args) {
-        new ORFFinder();
+        ORFFinder orfFinder = new ORFFinder();
+        orfFinder.readAndFindORFs();
+
     }
 
     /**
@@ -34,7 +35,7 @@ public class ORFFinder   {
      * using ordinal values as keys maybe? later?: ATG 658471, TAG 846571, TAA 846565, TGA 847165 (changed use of hashmaps to arraylist for now)
      * chars of interest and their ASCII values: (65, A) (84, T) (67, C) (71, G) (62, >)
      */
-    public void read() {
+    public void readAndFindORFs() {
 
         long startTime = System.nanoTime();
 
