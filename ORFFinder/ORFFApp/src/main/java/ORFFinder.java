@@ -25,7 +25,9 @@ public class ORFFinder   {
      * main (for testing...)
      */
     public static void main(String[] args) {
+        // test ORFFinder
         ORFFinder orfFinder = new ORFFinder();
+        // read the default input
         orfFinder.readAndFindORFs();
 
     }
@@ -36,7 +38,10 @@ public class ORFFinder   {
      * chars of interest and their ASCII values: (65, A) (84, T) (67, C) (71, G) (62, >)
      */
     public void readAndFindORFs() {
+        readAndFindORFs(filename_RELATIVE_TEMP);
+    }
 
+    public void readAndFindORFs(String filename) {
         long startTime = System.nanoTime();
 
         int[] last = new int[3];
@@ -49,7 +54,7 @@ public class ORFFinder   {
         int c;
 
         try (BufferedReader reader = Files.newBufferedReader(
-                Path.of(filename_RELATIVE_TEMP))) {
+                Path.of(filename))) {
 
             while ((c = reader.read()) != -1) {
                 // iterate over character (int) in the file...
