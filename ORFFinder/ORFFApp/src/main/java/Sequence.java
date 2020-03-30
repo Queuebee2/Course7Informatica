@@ -5,14 +5,14 @@ public class Sequence {
 
     static int totalCompletedORFs = 0;
 
-    ArrayList<ORFBaby> ActiveORFBabyMap;
+    ArrayList<ORF> activeORFMap;
     ArrayList<ORF> CompletedORFMap;
     int sequenceID;
     boolean isActive; // is the baby active or not
 
     public Sequence(int sequenceID) {
         this.sequenceID = sequenceID;
-        ActiveORFBabyMap = new ArrayList<ORFBaby>();
+        activeORFMap = new ArrayList<ORF>();
         CompletedORFMap = new ArrayList<ORF>();
     }
 
@@ -25,22 +25,21 @@ public class Sequence {
         return totalCompletedORFs; // todo rename
     }
 
-    public void addORFBaby(ORFBaby orfBaby) {
-        ActiveORFBabyMap.add(orfBaby);
+    public void addORFBaby(ORF orf) {
+        activeORFMap.add(orf);
 
     }
 
     public void feedActiveORFBabies(boolean isStopcodon) {
-        // System.out.println("feeding  " + ActiveORFBabyMap.size());  // TODO DEBUGPRINT
+        // System.out.println("feeding  " + activeORFMap.size());  // TODO DEBUGPRINT
 
-        ArrayList inactives = new ArrayList(ActiveORFBabyMap.size());
+        ArrayList inactives = new ArrayList(activeORFMap.size());
 
-        for (Object orfBaby : ActiveORFBabyMap) {
-            isActive = ((ORFBaby) orfBaby).feed(isStopcodon);
+        for (ORF orf : activeORFMap) {
+            isActive = orf.feed(isStopcodon);
             if (!isActive) {
-                inactives.add(orfBaby);
-                ORF matureORF = ((ORFBaby) orfBaby).mature();
-                CompletedORFMap.add(matureORF);
+                inactives.add(orf);
+                CompletedORFMap.add(orf);
             }
 
         }
@@ -48,7 +47,7 @@ public class Sequence {
         // remove inactives (cant do in other loop, derp)
         for (Object orfBaby : inactives) {
             // System.out.println(orfBaby);  //
-            ActiveORFBabyMap.remove(orfBaby);
+            activeORFMap.remove(orfBaby);
         }
 
     }
@@ -60,7 +59,7 @@ public class Sequence {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Sequence{");
-        sb.append("ActiveORFMap=").append(ActiveORFBabyMap.size());
+        sb.append("ActiveORFMap=").append(activeORFMap.size());
         sb.append(", CompletedORFMap=").append(CompletedORFMap.size());
         sb.append(", sequenceID=").append(sequenceID);
         sb.append('}');

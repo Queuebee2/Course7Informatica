@@ -123,11 +123,11 @@ public class ORFFinder {
                                 // System.out.println("is stop codon true");  // TODO DEBUGPRINT
                                 isStopCodon = true;
                                 break;
-                            case "658471":  // ATG replaces // if (last[0] == 65 && last[1] == 84 && last[2] == 71) {}
+                            case "658471":  // ATG
                                 trackedATGs++;
                                 // continue to default
-                                ORFBaby orfBaby = new ORFBaby(currentPos, currentSequence);
-                                currentSequence.addORFBaby(orfBaby);
+                                ORF orf = new ORF(currentPos, currentSequence);
+                                currentSequence.addORFBaby(orf);
                             default:
                                 // System.out.println("is stop codon false");   // TODO DEBUGPRINT
                                 isStopCodon = false;
