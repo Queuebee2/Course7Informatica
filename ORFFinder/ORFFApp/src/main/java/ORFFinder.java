@@ -3,16 +3,17 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 // try -Xms512M -Xmx512M in VM options
 
 /**
  * ORFFinder reads through a textfile (assumed format: nucleotide FASTA) to find ORFS
- *
  */
-public class ORFFinder   {
+public class ORFFinder {
 
     static String filename_RELATIVE_TEMP = "data/DNA.txt";
+    private final ArrayList<Sequence> sequences = new ArrayList<Sequence>(100);
 
     /**
      * constructor
@@ -29,6 +30,8 @@ public class ORFFinder   {
         ORFFinder orfFinder = new ORFFinder();
         // read the default input
         orfFinder.readAndFindORFs();
+
+        orfFinder.seeDNA();
 
     }
 
@@ -79,7 +82,7 @@ public class ORFFinder   {
                             System.out.println(header);
                         }
                         currentSequence = new Sequence(currentSequenceID);
-                        System.out.println("created " + currentSequenceID);
+                        sequences.add(currentSequence);
                         break;
                     case (65):  // ASCII 65 == A
                     case (67):  // ASCII 67 == C
@@ -106,7 +109,7 @@ public class ORFFinder   {
                                 isStopCodon = false;
                                 break;
                         }
-                        currentSequence.feedActiveORFBabies(isStopCodon);
+                        currentSequence.feedActiveORFBabies(c, isStopCodon);
 
                         break;
                     default:
@@ -135,6 +138,14 @@ public class ORFFinder   {
         System.out.println("Duration : " + seconds + " seconds");
     }
 
+    public void seeDNA() {
+        for (Sequence sequence : sequences) {
+            for (ORF orf : sequence) {
+                System.out.println(orf);
+                System.out.println(orf.getDnaSequence());
+            }
+        }
+    }
 
     public void testReadAndCountSpeed(int amount) {
         for (int i = 0; i < amount + 1; i++) {

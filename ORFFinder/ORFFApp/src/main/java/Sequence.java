@@ -1,6 +1,9 @@
-import java.util.ArrayList;
+import com.sun.source.tree.LiteralTree;
 
-public class Sequence {
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class Sequence implements Iterable<ORF> {
 
 
     static int totalCompletedORFs = 0;
@@ -30,13 +33,13 @@ public class Sequence {
 
     }
 
-    public void feedActiveORFBabies(boolean isStopcodon) {
+    public void feedActiveORFBabies(int c, boolean isStopcodon) {
         // System.out.println("feeding  " + activeORFMap.size());  // TODO DEBUGPRINT
 
         ArrayList inactives = new ArrayList(activeORFMap.size());
 
         for (ORF orf : activeORFMap) {
-            isActive = orf.feed(isStopcodon);
+            isActive = orf.feed(c, isStopcodon);
             if (!isActive) {
                 inactives.add(orf);
                 CompletedORFMap.add(orf);
@@ -70,4 +73,8 @@ public class Sequence {
         return CompletedORFMap.size();
     }
 
+    @Override
+    public Iterator<ORF> iterator() {
+        return CompletedORFMap.iterator();
+    }
 }

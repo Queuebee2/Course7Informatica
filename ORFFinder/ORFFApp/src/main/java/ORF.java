@@ -6,28 +6,41 @@ public class ORF {
     private int startpos;
     private int length;
     private int endpos;
+    private String dnaSequence;
+    private StringBuilder dnaBuilder;
+
 
     public ORF(int startpos, Sequence parent) {
         this.id = totalBabyORFs++;
         this.startpos = startpos;
 
 
+
+
         /**
          * bugfix: initial length 3 -> 2, because each ORF wil be 'fed' the last 'G' of 'ATG' directly after
          * initiation
          */
-        this.length = 2;
+        // this.length = 2;
+        this.dnaBuilder = new StringBuilder("AT");
 
         this.parentSequence = parent;
     }
 
-    public boolean feed(boolean stopcodon) {                // todo maybe this can return a mature ORF on stopcodon instead
-        this.length++;
-        if (stopcodon && length % 3 == 0) {
+    public boolean feed(int c, boolean stopcodon) {                // todo maybe this can return a mature ORF on stopcodon instead
+        // this.length++;
+        dnaBuilder.append((char) c);
+        if (stopcodon && dnaBuilder.length() % 3 == 0) {
             endpos = startpos + length;
+            dnaSequence = dnaBuilder.toString();
+            dnaBuilder = null;
             return false;
         }
         return true;
+    }
+
+    public String getDnaSequence() {
+        return dnaSequence;
     }
 
     @Override
