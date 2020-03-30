@@ -8,3 +8,7 @@ Old/
 ORFFinder/ORFFApp/target/
 
 ORFFinder/ORFFApp/ORFFApp.iml
+
+ORFFinder/ORFFApp/data/DNA.txt
+
+ORFFinder/ORFFApp/data/HUGE_DNA.txt
