@@ -14,9 +14,6 @@ public class ORF {
         this.id = totalBabyORFs++;
         this.startpos = startpos;
 
-
-
-
         /**
          * bugfix: initial length 3 -> 2, because each ORF wil be 'fed' the last 'G' of 'ATG' directly after
          * initiation
@@ -41,6 +38,10 @@ public class ORF {
 
     public String getDnaSequence() {
         return dnaSequence;
+    }
+
+    public int getLength() {
+        return dnaSequence.length();
     }
 
     @Override

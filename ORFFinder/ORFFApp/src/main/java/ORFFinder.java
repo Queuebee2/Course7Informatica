@@ -1,5 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +18,7 @@ public class ORFFinder {
      * constructor
      */
     public ORFFinder() {
+
 
     }
 
@@ -103,13 +103,13 @@ public class ORFFinder {
                                 trackedATGs++;
                                 // continue to default
                                 ORF orf = new ORF(currentPos, currentSequence);
-                                currentSequence.addORFBaby(orf);
+                                currentSequence.addNewORF(orf);
                             default:
                                 // System.out.println("is stop codon false");   // TODO DEBUGPRINT
                                 isStopCodon = false;
                                 break;
                         }
-                        currentSequence.feedActiveORFBabies(c, isStopCodon);
+                        currentSequence.feedActiveORFs(c, isStopCodon);
 
                         break;
                     default:
