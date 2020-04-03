@@ -10,7 +10,6 @@ public class Reader {
     private static ORFFinder orf;
 
     static File FileChooser() {
-
         System.out.println("i got here");
         JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         jfc.setDialogTitle("Choose a directory to save your file: ");
@@ -27,8 +26,11 @@ public class Reader {
 
         return file;
     }
-    static List<Integer> getLengths(){
+    static List<Integer> getLengths() {
+        int largest = 0;
         List<Integer> listoflength = orf.getInfoForVisualisation();
+
         return listoflength;
     }
+
 }
