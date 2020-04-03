@@ -1,21 +1,28 @@
 package ORFF_GUI;
 
-import java.util.ArrayList;
+import com.sun.source.tree.LiteralTree;
 
-public class Sequence {
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class Sequence implements Iterable<ORF> {
 
 
     static int totalCompletedORFs = 0;
 
-    ArrayList<ORFBaby> ActiveORFBabyMap;
-    ArrayList<ORF> CompletedORFMap;
+    ArrayList<ORF> activeORFMap;
+    ArrayList<ORF> completedORFMap;
     int sequenceID;
     boolean isActive; // is the baby active or not
+    private int longestORF = 0;
+    private int totalORFLength = 0;
+    private int shortestORF = 100000000;
+    private int lengthOfsequence = 0;
 
     public Sequence(int sequenceID) {
         this.sequenceID = sequenceID;
-        ActiveORFBabyMap = new ArrayList<ORFBaby>();
-        CompletedORFMap = new ArrayList<ORF>();
+        activeORFMap = new ArrayList<ORF>();
+        completedORFMap = new ArrayList<ORF>();
     }
 
     public static void addTotalCompletedORFCount(int amount) {// todo rename
@@ -27,30 +34,45 @@ public class Sequence {
         return totalCompletedORFs; // todo rename
     }
 
-    public void addORFBaby(ORFBaby orfBaby) {
-        ActiveORFBabyMap.add(orfBaby);
+    public void addNewORF(ORF orf) {
+        activeORFMap.add(orf);
 
     }
 
-    public void feedActiveORFBabies(boolean isStopcodon) {
-        // System.out.println("feeding  " + ActiveORFBabyMap.size());  // TODO DEBUGPRINT
+    public void feedActiveORFs(int c, boolean isStopcodon) {
+        // System.out.println("feeding  " + activeORFMap.size());  // TODO DEBUGPRINT
 
-        ArrayList inactives = new ArrayList(ActiveORFBabyMap.size());
+        ArrayList inactives = new ArrayList(activeORFMap.size());
 
-        for (Object orfBaby : ActiveORFBabyMap) {
-            isActive = ((ORFBaby) orfBaby).feed(isStopcodon);
+        for (ORF orf : activeORFMap) {
+            isActive = orf.feed(c, isStopcodon);
             if (!isActive) {
-                inactives.add(orfBaby);
-                ORF matureORF = ((ORFBaby) orfBaby).mature();
-                CompletedORFMap.add(matureORF);
+                inactives.add(orf);
+                if (!(orf.getLength() <= Settings.MINIMAL_ORF_LENGTH)) {
+                    // if orf.Length  is not too small, add it
+                    int orfLength = orf.getLength();
+                    totalORFLength += orfLength;
+                    if (orfLength > longestORF) {
+                        longestORF = orfLength;
+                    }
+                    if (orfLength < shortestORF) {
+                        shortestORF = orfLength;
+                    }
+                    completedORFMap.add(orf);
+                } else {
+                    // orfs that are too small are disposed of
+                    orf = null;
+                }
+
             }
 
         }
 
+
         // remove inactives (cant do in other loop, derp)
-        for (Object orfBaby : inactives) {
+        for (Object orf : inactives) {
             // System.out.println(orfBaby);  //
-            ActiveORFBabyMap.remove(orfBaby);
+            activeORFMap.remove(orf);
         }
 
     }
@@ -62,15 +84,38 @@ public class Sequence {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Sequence{");
-        sb.append("ActiveORFMap=").append(ActiveORFBabyMap.size());
-        sb.append(", CompletedORFMap=").append(CompletedORFMap.size());
-        sb.append(", sequenceID=").append(sequenceID);
+        sb.append("sequenceID=").append(sequenceID);
+        sb.append(", totalORFLength=").append(totalORFLength);
+        sb.append(", averageORFLength=").append(getAverageORFLength());
+        sb.append(", longestORF=").append(longestORF);
+        sb.append(", shortestORF=").append(shortestORF);
+        sb.append(", completedORFs=").append(getCompletedORFCount());
+        sb.append(", length of Sequence=").append(lengthOfsequence);
         sb.append('}');
         return sb.toString();
     }
-
-    public int getCompletedORFCount() {
-        return CompletedORFMap.size();
+    public void calculateLength(int i){
+        lengthOfsequence = lengthOfsequence + i;
+    }
+    public int getShortestORFLength() {
+        return shortestORF;
     }
 
+    public int getLongestORFLength() {
+        return longestORF;
+    }
+
+    public int getAverageORFLength() {
+        return totalORFLength / completedORFMap.size();
+    }
+
+    public int getCompletedORFCount() {
+        return completedORFMap.size();
+    }
+
+    public int getLengthOfsequence(){return lengthOfsequence;}
+    @Override
+    public Iterator<ORF> iterator() {
+        return completedORFMap.iterator();
+    }
 }

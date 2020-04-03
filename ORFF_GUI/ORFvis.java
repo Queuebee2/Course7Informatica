@@ -5,6 +5,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.List;
 
 public class ORFvis extends JFrame {
     private JFrame mainFrame;
@@ -20,15 +21,23 @@ public class ORFvis extends JFrame {
     }
 
     public static void main(String[] args) {
+        new SplashScreenDemo();
         ORFvis swingMenuDemo = new ORFvis();
-        swingMenuDemo.ORFvisualisatie();
         swingMenuDemo.showFile();
         swingMenuDemo.showMenuDemo();
 
 
-    }
 
+    }
+    private void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
     private void prepareGUI() {
+        setLookAndFeel();
         mainFrame = new JFrame("ORFF_GUI");
         mainFrame.setSize(1000, 1000);
         mainFrame.setLayout(null);
@@ -71,11 +80,16 @@ public class ORFvis extends JFrame {
 
     private void ORFvisualisatie(){
         Border blackline = BorderFactory.createLineBorder(Color.black);
-        JPanel visScreen = new JPanel();
-        visScreen.setBounds(5,240,970,685);
+        JPanel visScreen = new VisualisatiePane();
         visScreen.setBackground(Color.white);
-        visScreen.setBorder(blackline);
+        visScreen.setBounds(5,240,970,685);
+        //JScrollPane displayORF = new JScrollPane(visScreen);
+        //displayORF.setBorder(blackline);
+        //displayORF.setBounds(5,240,970,685);
+        //displayORF.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //displayORF.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         controlPanel.add(visScreen);
+
         // TODO: 31-3-2020 make visualisation 
     }
     private void showMenuDemo() {
@@ -201,6 +215,7 @@ public class ORFvis extends JFrame {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
+                    ORFvisualisatie();
                 case "Export":
                     System.out.println("hellooo");
                     break;

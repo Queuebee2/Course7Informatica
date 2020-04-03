@@ -3,9 +3,11 @@ package ORFF_GUI;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.List;
 
 public class Reader {
     private static File file;
+    private static ORFFinder orf;
 
     static File FileChooser() {
 
@@ -20,8 +22,13 @@ public class Reader {
                 file = jfc.getSelectedFile();
             }
         }
-        ORFFinder.read(file);
+        orf = new ORFFinder();
+        orf.readAndFindORFs(String.valueOf(file));
+
         return file;
     }
-
+    static List<Integer> getLengths(){
+        List<Integer> listoflength = orf.getInfoForVisualisation();
+        return listoflength;
+    }
 }
