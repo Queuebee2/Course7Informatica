@@ -347,14 +347,15 @@ public class ORFVisualiser extends JFrame {
             switch (actionEventName) {
 
                 case "New":
-                    File file = Reader.FileChooser();
+                    Reader reader = new Reader();
+                    File file = reader.FileChooser();
                     pathToFile.setText(String.valueOf(file));
                     try {                     // todo disabled due to memory issues
                         FileDisplayer(file);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    list = Reader.getSeq_list();
+                    list = reader.getSeq_list();
                     ORFtable();
                     //reclist = makeRec();
                     //ORFvisualisatie();
