@@ -12,6 +12,7 @@ public class Sequence implements Iterable<ORF> {
     final long offset;      // in file
     public long EndPos;
     public long RealSize;
+    private ArrayList<String[]> tablelist;
 
     private  ArrayList<ORF> ORFList = new ArrayList<ORF>();
     private  ArrayList<ORF>[] ORFTrackers =  new ArrayList[3];
@@ -56,7 +57,19 @@ public class Sequence implements Iterable<ORF> {
     public Iterator<ORF> iterator() {
         return ORFList.iterator();
     }
-
+    public ArrayList<String[]> makeTable_list(){
+        tablelist = new ArrayList<String[]>();
+        for(ORF orf:ORFList){
+            String[] orfvalue = new String[5];
+            orfvalue[0] = String.valueOf(SequenceID);
+            orfvalue[1] = String.valueOf(orf.getCounterStart());
+            orfvalue[2] = String.valueOf(orf.counterEnd);
+            orfvalue[3] = String.valueOf(orf.getSize());
+            orfvalue[4] = "sequence could be added";
+            tablelist.add(orfvalue);
+        }
+        return tablelist;
+    }
     public String getStatistics() {
         long totalOrfLength = 0;
         long averageOrfLength = 0;

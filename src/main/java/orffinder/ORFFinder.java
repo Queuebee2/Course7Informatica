@@ -345,14 +345,10 @@ public class ORFFinder {
 
     }
 
-    public List<Integer> getInfoForVisualisation() {
 
-        List<Integer> num = new ArrayList<>();
-        for (Sequence sequence : sequences) {
-            int length = (int) sequence.RealSize;
-            num.add(length);
-        }
-        return num;
+    public ArrayList<Sequence> getInfoForVisualisation() {
+
+        return new ArrayList<>(sequences);
     }
 
 
