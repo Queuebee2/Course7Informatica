@@ -9,6 +9,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +29,12 @@ public class ORFVisualiser extends JFrame {
     private ArrayList<Rectangle> reclist;
     private JTable table;
     private ListSelectionModel listSelectionModel;
+
+    // currently testing
+    JScrollBar verticalScrollBarTextArea;
+    MappedByteBuffer fileBuffer; // current file loaded should be field of some controller class,
+    int fileMaxPos;
+    final int MAX_CHARACTERS_LOADED = 10000;
 
     Color black= new Color(43, 43, 43);
     Color lighter_black= new Color(60, 63, 65);
@@ -115,10 +124,40 @@ public class ORFVisualiser extends JFrame {
         displayfile.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         displayfile.setPreferredSize(new Dimension(940,100));
 
+        // set scroll policy for vertical scrollbar  (testing stage)
+        verticalScrollBarTextArea = displayfile.getVerticalScrollBar();
+        verticalScrollBarTextArea.addAdjustmentListener(adjustmentEvent -> verticalAdjustment());
+
+
         textofFile.setText("Display of file content");
 
         controlPanel.add(pathToFile, BorderLayout.NORTH);
         controlPanel.add(displayfile,BorderLayout.CENTER);
+    }
+
+    private void verticalAdjustment() {
+
+
+        float currentScrollPos = (float) ( (float) verticalScrollBarTextArea.getValue() / (float) verticalScrollBarTextArea.getMaximum()) / 0.8f; //0.8f because scrollbarsize-scrollthingy = 80 ..
+
+        System.out.println("did a vertical adjustment, pos:" + currentScrollPos);
+
+        float startPos = currentScrollPos * fileMaxPos;
+        int endPos;
+        if (fileMaxPos > MAX_CHARACTERS_LOADED) {
+            endPos = (int) (startPos + MAX_CHARACTERS_LOADED);
+        } else {
+            endPos = fileMaxPos;
+        }
+
+        StringBuilder textBuilder = new StringBuilder();
+        for (int i = (int) startPos; i < fileMaxPos; i++) {
+            textBuilder.append((char) fileBuffer.get(i));
+        }
+
+        System.out.println("got text from + " + startPos + " to " + fileMaxPos);
+        textofFile.setText(textBuilder.toString());
+
     }
 
     private ArrayList<Rectangle> makeRec() {
@@ -332,11 +371,12 @@ public class ORFVisualiser extends JFrame {
     }
     private void FileDisplayer(File file) throws IOException {
 
-        BufferedReader input = new BufferedReader(
-                new InputStreamReader(
-                        new FileInputStream(
-                                file)));
-        textofFile.read(input, "READING FILE :)");
+        RandomAccessFile mainRAFile = new RandomAccessFile(file, "r");
+        FileChannel mainFileChannel = mainRAFile.getChannel();
+        //  mainBuffer = new RandomAccessFile(file, "r").getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size()); // as oneliner
+        fileBuffer = mainFileChannel.map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size());
+        fileBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        fileMaxPos = fileBuffer.capacity();
     }
 
     class MenuItemListener implements ActionListener {
