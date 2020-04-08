@@ -31,7 +31,7 @@ public class Sequence implements Iterable<ORF> {
     public void addNewORF(long position, long charCounter, int modulo) {
         //ORFTrackers.get(modulo).add(new ORF(position, charCounter)); // for nested arraylist
 
-        ORFTrackers[modulo].add(new ORF(position, charCounter));
+        ORFTrackers[modulo].add(new ORF(position, charCounter, this));
     }
 
     public void updateORFs(long endPos, long charCounter, int modulo) {
@@ -59,13 +59,14 @@ public class Sequence implements Iterable<ORF> {
     }
     public ArrayList<String[]> makeTable_list(){
         tablelist = new ArrayList<String[]>();
+        int orfIdMaker = 0;
         for(ORF orf:ORFList){
             String[] orfvalue = new String[5];
             orfvalue[0] = String.valueOf(SequenceID);
             orfvalue[1] = String.valueOf(orf.getCounterStart());
             orfvalue[2] = String.valueOf(orf.counterEnd);
             orfvalue[3] = String.valueOf(orf.getSize());
-            orfvalue[4] = "sequence could be added";
+            orfvalue[4] = String.valueOf(orfIdMaker++);
             tablelist.add(orfvalue);
         }
         return tablelist;
@@ -114,6 +115,9 @@ public class Sequence implements Iterable<ORF> {
             statistics.append(" RealSize=").append(o.getSize());
             statistics.append(" StartCounter=").append(o.getCounterStart());
             statistics.append(" EndCounter=").append(o.counterEnd);
+            statistics.append(" ID: ").append(o.getID());
+            statistics.append(" PARENT: ").append(o.parentSequence);
+
         }
 
         statistics.append(" totalOrfLength=").append(totalOrfLength);
