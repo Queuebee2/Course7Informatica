@@ -7,9 +7,19 @@ public class ORF {
     private long counterStart;   // relative counter to dna
     public long counterEnd;     // relative counter to dna without the fucking linefeeds
 
-public ORF(long position, long charCounter) {
+    // currently testing
+    public Sequence parentSequence;
+    private int ID;
+    static int orfsmade = 0;
+
+public ORF(long position, long charCounter, Sequence parent) {
+
     offset = position;
     counterStart = charCounter;
+
+    // currently testing (speed)
+    parentSequence = parent;
+    ID = orfsmade++;
 }
     
     public long getSize() {
@@ -28,6 +38,9 @@ public ORF(long position, long charCounter) {
         return endpos;
     }
 
+    public int getID(){
+        return ID;
+    }
 }
 
 
