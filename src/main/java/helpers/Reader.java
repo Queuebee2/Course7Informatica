@@ -1,10 +1,12 @@
 package helpers;
 
 import orffinder.ORFFinder;
+import orffinder.Sequence;
 
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -12,7 +14,7 @@ public class Reader {
     private static File file;
     private static ORFFinder orfFinder;
 
-    public static File FileChooser() {
+    public File FileChooser() {
         System.out.println("Reader.FileChooser() fired!");               // todo-debugprint
         JFileChooser jfc = new JFileChooser(".");
         jfc.setDialogTitle("Choose a directory to save your file: ");
@@ -35,15 +37,13 @@ public class Reader {
         }
 
         orfFinder.findOrfs();
-
+        orfFinder.getallOrfs();
         return file;
     }
 
-    public static List<Integer> getLengths() {
-        int largest = 0;
-        List<Integer> listoflengths = orfFinder.getInfoForVisualisation();
+    public ArrayList<Sequence> getSeq_list() {
 
-        return listoflengths;
+        return orfFinder.getInfoForVisualisation();
     }
 
 }
