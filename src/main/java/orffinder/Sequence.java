@@ -66,7 +66,7 @@ public class Sequence implements Iterable<ORF> {
             orfvalue[1] = String.valueOf(orf.getCounterStart());
             orfvalue[2] = String.valueOf(orf.counterEnd);
             orfvalue[3] = String.valueOf(orf.getSize());
-            orfvalue[4] = String.valueOf(orfIdMaker++);
+            orfvalue[4] = String.valueOf(orf.getID());
             orfvalue[5] = String.valueOf(orf.parentSequence);
             tablelist.add(orfvalue);
         }

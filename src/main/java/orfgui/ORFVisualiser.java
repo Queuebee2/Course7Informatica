@@ -24,6 +24,7 @@ public class ORFVisualiser extends JFrame {
     private ORFFinder orfFinder;
     private HashMap<Integer,ORF> ORFlist;
     private JTable selected_table;
+    private JPanel sidepanel;
     private JTextField pathToFile;
     private JTextArea textofFile;
     private JLabel jLabelEmptyHolderImage;
@@ -181,9 +182,9 @@ public class ORFVisualiser extends JFrame {
             tableModel = new DefaultTableModel(columnNames, 0);
         }
         else{
+
                 tableModel = (DefaultTableModel) table.getModel();
-                int rows = selected_table.getRowCount();
-                tableModel.fireTableRowsDeleted(0, rows - 1);
+                tableModel.setRowCount(0);
             }
 
             for (Sequence sequence : list) {
@@ -335,27 +336,25 @@ public class ORFVisualiser extends JFrame {
         textofFile.read(input, "READING FILE :)");
     }
     private void MakeSidePanel(ArrayList<String> indexlist){
-        MakeORFlist();
         DefaultTableModel tableModel = null;
-        JPanel sidepanel = new JPanel();
+        sidepanel = new JPanel();
         if ( selected_table == null) {
             String[] columnNames = {"ID", "Sequence"};
             tableModel = new DefaultTableModel(columnNames, 0);
         }
         else{
             sidepanel.remove(selected_table);
-
             tableModel = (DefaultTableModel) selected_table.getModel();
             tableModel.setRowCount(0);
         }
         for(String index : indexlist){
            ORF orf = ORFlist.get(Integer.parseInt(index));
+
            String sequence = orfFinder.getOrf(orf);
            String[] value = new String[3];
            value[0] = index;
            value[1] = sequence;
            tableModel.addRow(value);
-
         }
         selected_table = new JTable(tableModel);
         selected_table.setModel(tableModel);
@@ -396,12 +395,12 @@ public class ORFVisualiser extends JFrame {
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
                             String index = (String) table.getValueAt(i, 4);
+                            System.out.println(index);
                             indexlist.add(index);
-                            MakeSidePanel(indexlist);
 
                         }
                     }
-
+                    MakeSidePanel(indexlist);
                 }
 
             }
@@ -430,6 +429,7 @@ public class ORFVisualiser extends JFrame {
                         ex.printStackTrace();
                     }
                     list = reader.getSeq_list();
+                    MakeORFlist();
                     ORFtable();
                     //reclist = makeRec();
                     //ORFvisualisatie();
