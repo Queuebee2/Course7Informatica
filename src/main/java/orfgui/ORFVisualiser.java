@@ -1,12 +1,17 @@
 package orfgui;
 import helpers.Reader;
+import orffinder.ORF;
+import orffinder.Sequence;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ORFVisualiser extends JFrame {
     private JFrame mainFrame;
@@ -17,6 +22,11 @@ public class ORFVisualiser extends JFrame {
     private JTextField pathToFile;
     private JTextArea textofFile;
     private JLabel jLabelEmptyHolderImage;
+    private ArrayList<Sequence> list;
+    private ArrayList<Rectangle> reclist;
+    private JTable table;
+    private ListSelectionModel listSelectionModel;
+
     Color black= new Color(43, 43, 43);
     Color lighter_black= new Color(60, 63, 65);
     Color DarkBlue= new Color(47, 79, 79);
@@ -111,20 +121,41 @@ public class ORFVisualiser extends JFrame {
         controlPanel.add(displayfile,BorderLayout.CENTER);
     }
 
+    private ArrayList<Rectangle> makeRec() {
+        System.out.println("im making more rectangles");
+
+        reclist = new ArrayList<Rectangle>();
+        int firstline = 10;
+        for (Sequence sequence : list) {
+             firstline = firstline + 30;
+             for (ORF orf : sequence) {
+                 Random rand = new Random();
+                 int start = (int) orf.getCounterStart();
+                 int size = (int) orf.getSize();
+                 Color randomColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+                 Rectangle rec = new Rectangle(10 + start, firstline + 5, size, 10, randomColor);
+                 reclist.add(rec);
+            }
+         }
+         System.out.println(reclist);
+        return reclist;
+    }
     private void ORFvisualisatie(){
         Border blackline = BorderFactory.createLineBorder(Blue);
-        JPanel visScreen = new VisualisatiePane();
+        JPanel visScreen = new VisualisatiePane(list,reclist);
         visScreen.setBackground(lighter_black);
         //visScreen.setBounds(5,240,970,685);
-        List<Integer> list = Reader.getLengths();
+
         System.out.println("got lengths" + list.size());
         int largest = 0;
-        for (int length : list) {
-            if (length > largest) {
-                largest = length;
+        for (Sequence sequence : list){
+            int Length = (int) sequence.getRealSize();
+            if (Length > largest) {
+                largest = Length;
                 System.out.println(largest);
+                }
             }
-        }
+        System.out.println("largest"+ largest);
         visScreen.setPreferredSize(new Dimension(largest,685));
         JScrollPane displayORF = new JScrollPane(visScreen);
         displayORF.setBorder(blackline);
@@ -134,6 +165,64 @@ public class ORFVisualiser extends JFrame {
         controlPanel.add(displayORF,BorderLayout.SOUTH);
 
         // TODO: 31-3-2020 make visualisation 
+    }
+
+    private void ORFtable() {
+        DefaultTableModel tableModel = null;
+        ArrayList<String[]> table_list = new ArrayList<String[]>();
+        if (table == null) {
+            String[] columnNames = {"ORF ID", "Start", "End", "Length", "Sequence ID"};
+            tableModel = new DefaultTableModel(columnNames, 0);
+
+            for (Sequence sequence : list) {
+                table_list = sequence.makeTable_list();
+                for (String[] string : table_list) {
+                    //System.out.println(Arrays.toString(string));
+                    tableModel.addRow(string);
+                }
+                table = new JTable(tableModel);
+                table.setModel(tableModel);
+                table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                tableModel.fireTableDataChanged();
+                table.setCellSelectionEnabled(true);
+                table.repaint();
+                //adding it to JScrollPane
+                JScrollPane sp = new JScrollPane(table);
+                //sp.repaint();
+                sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                sp.setViewportView(table);
+                //controlPanel.repaint();
+                listSelectionModel = table.getSelectionModel();
+                listSelectionModel.addListSelectionListener(
+                        new SharedListSelectionHandler()
+                );
+                controlPanel.add(sp, BorderLayout.SOUTH);
+            }
+        }
+        if (table != null) {
+            tableModel = (DefaultTableModel) table.getModel();
+            tableModel.setRowCount(0);
+            for (Sequence sequence : list) {
+                table_list = sequence.makeTable_list();
+                for (String[] string : table_list) {
+                    //System.out.println(Arrays.toString(string));
+                    tableModel.addRow(string);
+                }
+                table = new JTable(tableModel);
+                table.setCellSelectionEnabled(true);
+                table.setModel(tableModel);
+                table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                tableModel.fireTableDataChanged();
+                table.repaint();
+                //adding it to JScrollPane
+                JScrollPane sp = new JScrollPane(table);
+                //sp.repaint();
+                sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                sp.setViewportView(table);
+            }
+        }
     }
     private void showMenuDemo() {
         //create a menu bar
@@ -237,7 +326,7 @@ public class ORFVisualiser extends JFrame {
     }
 
     private void HolderImage(){
-        ImageIcon image = new ImageIcon("src/main/resources/rhatebed.gif");
+        ImageIcon image = new ImageIcon("src/main/resources/hatebed.gif");
         jLabelEmptyHolderImage =new JLabel("",image,JLabel.CENTER);
         controlPanel.add(jLabelEmptyHolderImage,BorderLayout.SOUTH);
     }
@@ -260,15 +349,19 @@ public class ORFVisualiser extends JFrame {
                 case "New":
                     File file = Reader.FileChooser();
                     pathToFile.setText(String.valueOf(file));
-//                    try {                     // todo disabled due to memory issues
-//                        FileDisplayer(file);
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                    }
-                    ORFvisualisatie();
+                    try {                     // todo disabled due to memory issues
+                        FileDisplayer(file);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    list = Reader.getSeq_list();
+                    ORFtable();
+                    //reclist = makeRec();
+                    //ORFvisualisatie();
                     controlPanel.repaint();
                     controlPanel.remove(jLabelEmptyHolderImage);
                     controlPanel.validate();
+                    break;
 
                 case "Export":
                 case "BLASTn":
