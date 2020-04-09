@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="163cad63-154e-4643-9941-4070260d818e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Course7Informatica.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Course7Informatica.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/resources/data/Glennie the platypus.fa" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/data/Glennie_the_platypus.fa" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
