@@ -9,7 +9,7 @@ public class TestORFFinder {
 
     public static void main(String[] args) {
         try {
-            File testfile = new File("D:\\GitHub\\Course7Informatica\\src\\test\\resources\\data\\DNA.txt");
+            File testfile = new File("src/test/resources/data/Glennie_the_platypus.fa");
             ORFFinder orfFinder = new ORFFinder(testfile);
             orfFinder.findOrfs();//
             orfFinder.printStats();
