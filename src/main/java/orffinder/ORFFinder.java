@@ -98,139 +98,139 @@ public class ORFFinder {
         int orfsCounted = 0;
 
 
-            MappedByteBuffer buffer =  mainBuffer;
+        MappedByteBuffer buffer =  mainBuffer;
 
-            final long lastValidDNACharacterPos = buffer.capacity() - 8;
+        final long lastValidDNACharacterPos = buffer.capacity() - 8;
 
-            boolean UNIXLinefeeds = true;
-            // check which type of linefeed the file contains, if it contains CR assume all are CRLF
-            while (position < lastValidDNACharacterPos) {
-                b_byteAtPointer = buffer.get();
-                if (b_byteAtPointer == CR) {
-                    System.out.println("Encountered {CR} character, assuming all lines end with CRLF! - WINDOWS FILE");
-                    UNIXLinefeeds = false;
-                }
-                if (b_byteAtPointer == LF) {
+        boolean UNIXLinefeeds = true;
+        // check which type of linefeed the file contains, if it contains CR assume all are CRLF
+        while (position < lastValidDNACharacterPos) {
+            b_byteAtPointer = buffer.get();
+            if (b_byteAtPointer == CR) {
+                System.out.println("Encountered {CR} character, assuming all lines end with CRLF! - WINDOWS FILE");
+                UNIXLinefeeds = false;
+            }
+            if (b_byteAtPointer == LF) {
+                break;
+            }
+            position++;
+        }
+
+        if (UNIXLinefeeds) {
+            delta = 3;      // for reading [current] + [T LF G] for example
+        } else {
+            delta = 4;      // for reading [current] + [CR LF T G] for example
+        }
+        final boolean isUnix = UNIXLinefeeds;
+
+        // reset pos to 0 before reading again
+        buffer.rewind();
+        position = 0;
+        int p_pointerPos = 0;
+
+        while (position < lastValidDNACharacterPos) {
+            // if c = #13 and c + 1 <> #10 then raise FuckingLinuxException
+
+            b_byteAtPointer = buffer.get(p_pointerPos);
+
+            switch (b_byteAtPointer) {
+                // end of line
+
+                case LF:
+                    currentTextLine++;
+
                     break;
-                }
-                position++;
-            }
 
-            if (UNIXLinefeeds) {
-                delta = 3;      // for reading [current] + [T LF G] for example
-            } else {
-                delta = 4;      // for reading [current] + [CR LF T G] for example
-            }
-            final boolean isUnix = UNIXLinefeeds;
-
-            // reset pos to 0 before reading again
-            buffer.rewind();
-            position = 0;
-            int p_pointerPos = 0;
-
-            while (position < lastValidDNACharacterPos) {
-                // if c = #13 and c + 1 <> #10 then raise FuckingLinuxException
-
-                b_byteAtPointer = buffer.get(p_pointerPos);
-
-                switch (b_byteAtPointer) {
-                    // end of line
-
-                    case LF:
-                        currentTextLine++;
-
-                        break;
-
-                    // header line start (>) marks start of new sequence object
-                    case HEADER: // >
-                        // if sequence object was made, end it here at the start of a new header
-                        if (currentFastaSequence != null) {
-                            currentFastaSequence.EndPos = position;          // TODO: 6-4-2020 make private? use setter?
-                            currentFastaSequence.RealSize = charCounter + 1;
-                            //currentFastaSequence.getStatistics();
+                // header line start (>) marks start of new sequence object
+                case HEADER: // >
+                    // if sequence object was made, end it here at the start of a new header
+                    if (currentFastaSequence != null) {
+                        currentFastaSequence.EndPos = position;          // TODO: 6-4-2020 make private? use setter?
+                        currentFastaSequence.RealSize = charCounter + 1;
+                        //currentFastaSequence.getStatistics();
+                    }
+                    // build the string of the new header (thanks java for not being nice with string concat)
+                    currHeader = new StringBuilder();
+                    buffer.position(p_pointerPos);
+                    while (position <= lastValidDNACharacterPos && b_byteAtPointer != LF) {
+                        b_byteAtPointer = buffer.get();
+                        if (b_byteAtPointer != CR) {
+                            currHeader.append((char) b_byteAtPointer);
                         }
-                        // build the string of the new header (thanks java for not being nice with string concat)
-                        currHeader = new StringBuilder();
-                        buffer.position(p_pointerPos);
-                        while (position <= lastValidDNACharacterPos && b_byteAtPointer != LF) {
-                            b_byteAtPointer = buffer.get();
-                            if (b_byteAtPointer != CR) {
-                                currHeader.append((char) b_byteAtPointer);
-                            }
-                            p_pointerPos++;
-                            position++;
+                        p_pointerPos++;
+                        position++;
 
-                        } //end while headerbuilder
+                    } //end while headerbuilder
 
-                        currentTextLine++;
-                        currentFastaSequence = new FastaSequence(filename, currHeader.toString(), currentTextLine, position);
+                    currentTextLine++;
+                    currentFastaSequence = new FastaSequence(filename, currHeader.toString(), currentTextLine, position);
 
-                        currHeader = null;
-                        fastaSequences.add(currentFastaSequence);
-                        charCounter = 0;
-                        continue; // do not increment position but continue
+                    currHeader = null;
+                    fastaSequences.add(currentFastaSequence);
+                    charCounter = 0;
+                    continue; // do not increment position but continue
 
 
-                        // check orf start
-                    case A:
-                        assert currentFastaSequence != null : "NO FUCKING DNA";
+                    // check orf start
+                case A:
+                    assert currentFastaSequence != null : "NO FUCKING DNA";
 
-                        // put byes 0,1,2 of buffer.getInt into currentCodon
-                        // (read 4 bytes from here but only use first 3 )
-                        currentCodonLong = buffer.getInt(p_pointerPos) & MASK_3;
+                    // put byes 0,1,2 of buffer.getInt into currentCodon
+                    // (read 4 bytes from here but only use first 3 )
+                    currentCodonLong = buffer.getInt(p_pointerPos) & MASK_3;
 
+
+                    if (currentCodonLong == ATG) {
+                        currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
+
+                    } else {
+                        // if 0,1,3 bytes wasn't enough, check 5 bytes briefly too
+                        currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
 
                         if (currentCodonLong == ATG) {
                             currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
-
-                        } else {
-                            // if 0,1,3 bytes wasn't enough, check 5 bytes briefly too
-                            currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
-
-                            if (currentCodonLong == ATG) {
-                                currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
-                            }
                         }
+                    }
 
-                        break;
+                    break;
 
-                    // check if orf ends
-                    case T:
-                        assert currentFastaSequence != null : "NO FUCKING DNA";
+                // check if orf ends
+                case T:
+                    assert currentFastaSequence != null : "NO FUCKING DNA";
 
-                        currentCodonLong = buffer.getInt(position) & MASK_3;
+                    currentCodonLong = buffer.getInt(position) & MASK_3;
 
+                    if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
+                        currentFastaSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
+
+                    } else {
+                        currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
                         if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
-                            currentFastaSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
+                            currentFastaSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
 
-                        } else {
-                            currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
-                            if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
-                                currentFastaSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
-
-                            }
                         }
+                    }
 
-                        break;
+                    break;
 
-                } // end switch (b_byteAtPointer)
+            } // end switch (b_byteAtPointer)
 
-                if (b_byteAtPointer >= 40) {
-                    charCounter++;  // count chars valued higher than A, assume in {A,T,C,G,N}
-                }
-                p_pointerPos++;
-                position++;
-
-            } // end while loop that reads over file
-
-            // round up the last sequence made (if any were made)
-            if (currentFastaSequence != null) {
-                if (currentFastaSequence.EndPos == 0) {
-                    currentFastaSequence.EndPos = lastValidDNACharacterPos;
-                    currentFastaSequence.RealSize = charCounter + 1;
-                }
+            if (b_byteAtPointer >= 40) {
+                charCounter++;  // count chars valued higher than A, assume in {A,T,C,G,N}
             }
-            //currentFastaSequence.getStatistics();
+            p_pointerPos++;
+            position++;
+
+        } // end while loop that reads over file
+
+        // round up the last sequence made (if any were made)
+        if (currentFastaSequence != null) {
+            if (currentFastaSequence.EndPos == 0) {
+                currentFastaSequence.EndPos = lastValidDNACharacterPos;
+                currentFastaSequence.RealSize = charCounter + 1;
+            }
+        }
+        //currentFastaSequence.getStatistics();
 
 
         // Print logged time

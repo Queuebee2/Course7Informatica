@@ -19,8 +19,7 @@ public class DatabaseManager {
     private Connection connection;
     private HashMap<ORF,String> Selected_ORFs;
 
-    public DatabaseManager(HashMap selected_ORF_list) throws SQLException {
-        Selected_ORFs = selected_ORF_list;
+    public DatabaseManager() throws SQLException {
         makeConnection();
     }
 
@@ -55,8 +54,14 @@ public class DatabaseManager {
             System.out.println("Failed to create connection to database.");
         }
     }
-    public void insert() throws SQLException {
+    public void insert(HashMap<ORF,String> selected_ORF_list) throws SQLException {
+        Selected_ORFs = selected_ORF_list;
         int nRowsInserted = 0;
+        System.out.println("amount of orfs" + Selected_ORFs.size());
+        for(ORF orf : Selected_ORFs.keySet()){
+            int id = orf.parentFastaSequence.SequenceID;
+
+        }
         for(ORF orf : Selected_ORFs.keySet()){
             // all id are auto increment
             String ORFtable_ORF_sequence = Selected_ORFs.get(orf);
@@ -70,12 +75,12 @@ public class DatabaseManager {
 
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO sequence (header,filename,orfs_found,total_length) VALUES (?, ?, ?, ?);");
             preparedStatement.setString(1, Sequencetable_header);
-            preparedStatement.setString(2, "wtf"); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden 
+            preparedStatement.setString(2, "doesnt work"); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden
             preparedStatement.setInt(3, Sequencetable_orfs_found);
             preparedStatement.setInt(4, Sequencetable_length);
             nRowsInserted += preparedStatement.executeUpdate();
 
-            int last_id = Integer.parseInt(getlatestid()); // TODO: 9-4-2020 make this work 
+            int last_id = Integer.parseInt(getlatestid()); // TODO: 9-4-2020 make this work
 
             PreparedStatement preparedStatement2 = connection.prepareStatement("INSERT INTO ORF (Sequence_id, start_position, stop_position, ORF_Sequence ) VALUES (?, ?, ?, ?);");
             preparedStatement2.setInt(1, last_id);

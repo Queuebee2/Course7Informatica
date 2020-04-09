@@ -8,17 +8,18 @@ public class FastaSequence implements Iterable<ORF> {
 
     public final String header;
     public String filename;
-    final int SequenceID;
+    public final int SequenceID;
     private static int IDIncrement = 0;
     final long lineNumber;
     final long offset;      // in file
     public long EndPos;
     public long RealSize;
-    public int completedOrfCount;
     private ArrayList<String[]> tablelist;
+
 
     private  ArrayList<ORF> ORFList = new ArrayList<ORF>();
     private  ArrayList<ORF>[] ORFTrackers =  new ArrayList[3];
+    public int completedOrfCount = ORFList.size();
 //final ArrayList<ArrayList<ORF>> ORFTrackers = new ArrayList < ArrayList < ORF >> (3); // if above doesnt work
 
     public FastaSequence(String filename, String currHeader, int currentTextLine, int position) {
@@ -74,6 +75,7 @@ public class FastaSequence implements Iterable<ORF> {
         }
         return tablelist;
     }
+
     public String getStatistics() {
         long totalOrfLength = 0;
         long averageOrfLength = 0;
