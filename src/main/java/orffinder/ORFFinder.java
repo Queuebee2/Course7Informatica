@@ -2,19 +2,15 @@ package orffinder;
 
 
 import helpers.MaskFactory;
-import org.jetbrains.annotations.Contract;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.math.BigDecimal;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 // try -Xms512M -Xmx512M in VM options
 // add -ea for enable assertions in VM options
@@ -43,7 +39,7 @@ public class ORFFinder {
     private static final long MASK_5 = 0xFFFFFFFFFFL;
 
     static String filename_RELATIVE_TEMP = "src/test/resources/data/Glennie the platypus.fa";
-    private final ArrayList<Sequence> sequences = new ArrayList<Sequence>(100);
+    private final ArrayList<FastaSequence> sequences = new ArrayList<FastaSequence>(100);
     private File file;
     private RandomAccessFile mainRAFile;
     private FileChannel mainFileChannel;
@@ -92,7 +88,7 @@ public class ORFFinder {
         int currentTextLine;
 
         // initialise some
-        Sequence currentSequence = null;
+        FastaSequence currentSequence = null;
         position = 0;
         charCounter = 0;
         currentTextLine = 0;
@@ -167,7 +163,7 @@ public class ORFFinder {
                         } //end while headerbuilder
 
                         currentTextLine++;
-                        currentSequence = new Sequence(currHeader.toString(), currentTextLine, position);
+                        currentSequence = new FastaSequence(filename, currHeader.toString(), currentTextLine, position);
 
                         currHeader = null;
                         sequences.add(currentSequence);
@@ -244,7 +240,7 @@ public class ORFFinder {
     }
 
     public void printStats() {
-        for (Sequence seq : sequences) {
+        for (FastaSequence seq : sequences) {
             seq.getStatistics();
         }
     }
@@ -307,7 +303,7 @@ public class ORFFinder {
         System.out.println("getting all ORFS...");
         String orfString;
         int orfsFound = 0;
-        for (Sequence seq : sequences
+        for (FastaSequence seq : sequences
         ) {
             for (ORF orf : seq
             ) {
@@ -346,8 +342,7 @@ public class ORFFinder {
     }
 
 
-    public ArrayList<Sequence> getInfoForVisualisation() {
-
+    public ArrayList<FastaSequence> getInfoForVisualisation() {
         return new ArrayList<>(sequences);
     }
 
