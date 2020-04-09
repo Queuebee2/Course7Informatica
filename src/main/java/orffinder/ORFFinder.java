@@ -321,7 +321,7 @@ public class ORFFinder {
         int c;
         StringBuilder dna = new StringBuilder();
 
-        int endpos = (int) orf.getEndpos();
+        int endpos = (int) orf.getEndpos() + 1;
         if (endpos + 1 < mainBuffer.capacity()) {
             for (int i = orf.getOffset(); i < endpos; i++) {
                 // todo change endpos in ORF
@@ -341,14 +341,14 @@ public class ORFFinder {
 
     }
 
-
+    @Deprecated
     public ArrayList<FastaSequence> getInfoForVisualisation() {
-
-        return new ArrayList<>(fastaSequences);
+        return getFastaSequences();
     }
 
-
-
+    public ArrayList<FastaSequence> getFastaSequences() {
+        return fastaSequences;
+    }
 
     private void logTime(long startTime, int verbose) {
         long endTime = System.nanoTime();
