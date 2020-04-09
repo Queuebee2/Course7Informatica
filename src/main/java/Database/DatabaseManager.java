@@ -132,19 +132,18 @@ public class DatabaseManager {
         try {
 
             Statement statement = connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT id FROM sequence  \n" +
-                    "ORDER BY id DESC  \n" +
-                    "LIMIT 1;  ");
+            ResultSet results = statement.executeQuery("SELECT max(id) FROM sequence ");
             while (results.next()) {
                 outputString =
                         String.format(
-                                "Data row = (%s)",
-                                results.getString(1));
+                                "%s",
+                                results.getInt(1));
 
             }
         } catch (SQLException e) {
             throw new SQLException("Encountered an error when executing given sql statement", e);
         }
+        System.out.println(outputString);
         return outputString;
     }
 }
