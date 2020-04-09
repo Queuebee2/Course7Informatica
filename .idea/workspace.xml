@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="163cad63-154e-4643-9941-4070260d818e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/blast/ORFBlaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/blast/ORFBlaster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/HelperTests/TestFastaConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/HelperTests/TestFastaConverter.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -52,7 +54,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.TestORFBlaster">
+  <component name="RunManager" selected="Application.TestORFVis">
     <configuration name="TestBlastProgramEnum" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="BlastTests.TestBlastProgramEnum" />
       <module name="Course7Informatica" />
@@ -99,9 +101,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.TestORFVis" />
         <item itemvalue="Application.TestORFBlaster" />
         <item itemvalue="Application.TestBlastProgramEnum" />
-        <item itemvalue="Application.TestORFVis" />
       </list>
     </recent_temporary>
   </component>

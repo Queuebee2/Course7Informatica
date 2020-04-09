@@ -11,7 +11,7 @@ public class TestFastaConverter {
 
         FastaConverter fc = new FastaConverter();
 
-        FastaSequence seq = new FastaSequence("sequence 1", 0, 0);
+        FastaSequence seq = new FastaSequence("nofilename", "sequence 1", 0, 0);
         seq.EndPos = 100;
         seq.RealSize= 90;
 

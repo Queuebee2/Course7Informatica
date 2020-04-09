@@ -1,12 +1,7 @@
 package helpers;
 
-import orffinder.ORFFinder;
-import orffinder.FastaSequence;
-
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class Reader {
@@ -26,10 +21,4 @@ public class Reader {
         }
         return file;
     }
-
-    public ArrayList<FastaSequence> getSeq_list() {
-
-        return orfFinder.getInfoForVisualisation();
-    }
-
 }

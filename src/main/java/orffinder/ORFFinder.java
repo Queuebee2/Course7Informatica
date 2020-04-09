@@ -163,7 +163,7 @@ public class ORFFinder {
                         } //end while headerbuilder
 
                         currentTextLine++;
-                        currentFastaSequence = new FastaSequence(currHeader.toString(), currentTextLine, position);
+                        currentFastaSequence = new FastaSequence(filename, currHeader.toString(), currentTextLine, position);
 
                         currHeader = null;
                         fastaSequences.add(currentFastaSequence);
