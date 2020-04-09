@@ -1,15 +1,14 @@
 package orfgui;
 import helpers.Reader;
+import main.Controller;
 import orffinder.ORF;
 import orffinder.ORFFinder;
 import orffinder.Sequence;
-import org.forester.archaeopteryx.tools.Blast;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -34,6 +33,7 @@ public class ORFVisualiser extends JFrame {
     private ArrayList<Rectangle> reclist;
     private JTable table;
     private ListSelectionModel listSelectionModel;
+    private String Blasttype;
 
     Color black= new Color(43, 43, 43);
     Color lighter_black= new Color(60, 63, 65);
@@ -349,6 +349,7 @@ public class ORFVisualiser extends JFrame {
         textofFile.read(input, "READING FILE :)");
     }
     private void MakeSelected_Table(ArrayList<String> indexlist){
+
         DefaultTableModel tableModel = null;
         Border blackline = BorderFactory.createLineBorder(Blue);
         Font titel = new Font("arial",Font.BOLD,16);
@@ -462,9 +463,11 @@ public class ORFVisualiser extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JComboBox cb = (JComboBox)e.getSource();
-            String Blasttype = (String)cb.getSelectedItem();
-            System.out.println(Blasttype);;
+            Blasttype = (String)cb.getSelectedItem();
+
+            System.out.println(Blasttype);
         }
+
     }
     class MenuItemListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
