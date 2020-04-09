@@ -1,7 +1,10 @@
 package Database;
 
 
+import orffinder.ORF;
+
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -14,8 +17,10 @@ import java.util.Properties;
  */
 public class DatabaseManager {
     private Connection connection;
+    private HashMap<ORF,String> Selected_ORFs;
 
-    public DatabaseManager() throws SQLException {
+    public DatabaseManager(HashMap selected_ORF_list) throws SQLException {
+        Selected_ORFs = selected_ORF_list;
         makeConnection();
     }
 
@@ -51,6 +56,20 @@ public class DatabaseManager {
         }
     }
     public void insert() throws SQLException {
+        for(ORF orf : Selected_ORFs.keySet()){
+            // all id are auto increment
+            String ORFtable_ORF_sequence = Selected_ORFs.get(orf);
+            int ORFtable_start = (int) orf.getCounterStart();
+            int ORFtable_stop = (int) orf.counterEnd;
+            String Sequencetable_header = "";
+            String Sequencetable_filename = "" ;
+            int Sequencetable_orfs_found = 0;
+
+
+            //ORF id : auto increment
+
+
+        }
         int nRowsInserted = 0;
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO test (name, quantity) VALUES (?, ?);");
         preparedStatement.setString(1, "banana");

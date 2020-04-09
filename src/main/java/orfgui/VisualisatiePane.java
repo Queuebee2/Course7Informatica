@@ -1,17 +1,15 @@
 package orfgui;
-import helpers.Reader;
-import orffinder.Sequence;
+import orffinder.FastaSequence;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class VisualisatiePane extends JPanel {
     private ArrayList<Rectangle> reclist;
-    private ArrayList<Sequence> seq_list;
+    private ArrayList<FastaSequence> seq_list;
 
-    VisualisatiePane(ArrayList<Sequence> list, ArrayList<orfgui.Rectangle> rectlist) {
+    VisualisatiePane(ArrayList<FastaSequence> list, ArrayList<Rectangle> rectlist) {
         seq_list = list;
         reclist = rectlist;
     }
@@ -22,7 +20,7 @@ public class VisualisatiePane extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(2));
-        for (Sequence s: seq_list){
+        for (FastaSequence s: seq_list){
             int size = (int) s.getRealSize();
             firstline = firstline + 30;
             g.drawLine(10,10 + firstline,size - 10,10 + firstline);

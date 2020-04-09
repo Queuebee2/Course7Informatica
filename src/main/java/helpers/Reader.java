@@ -1,18 +1,11 @@
 package helpers;
 
-import orffinder.ORFFinder;
-import orffinder.Sequence;
-
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Reader {
     private static File file;
-    private static ORFFinder orfFinder;
 
     public File FileChooser() {
         System.out.println("Reader.FileChooser() fired!");               // todo-debugprint
@@ -26,24 +19,7 @@ public class Reader {
                 file = jfc.getSelectedFile();
             }
         }
-
-        try {
-            orfFinder = new ORFFinder(file);
-
-        } catch (IOException e) {
-
-            // todo popup
-            e.printStackTrace();
-        }
-
-        orfFinder.findOrfs();
-        orfFinder.getallOrfs();
         return file;
-    }
-
-    public ArrayList<Sequence> getSeq_list() {
-
-        return orfFinder.getInfoForVisualisation();
     }
 
 }

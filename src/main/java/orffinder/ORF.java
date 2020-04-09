@@ -8,11 +8,11 @@ public class ORF {
     public long counterEnd;     // relative counter to dna without the fucking linefeeds
 
     // currently testing
-    public Sequence parentSequence;
+    public FastaSequence parentSequence;
     private int ID;
     static int orfsmade = 0;
 
-public ORF(long position, long charCounter, Sequence parent) {
+public ORF(long position, long charCounter, FastaSequence parent) {
 
     offset = position;
     counterStart = charCounter;

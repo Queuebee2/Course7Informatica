@@ -1,9 +1,9 @@
 package orfgui;
+import Database.DatabaseManager;
 import helpers.Reader;
-import main.Controller;
+import orffinder.FastaSequence;
 import orffinder.ORF;
 import orffinder.ORFFinder;
-import orffinder.Sequence;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -14,6 +14,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ORFVisualiser extends JFrame {
@@ -29,7 +30,7 @@ public class ORFVisualiser extends JFrame {
     private JTextField pathToFile;
     private JTextArea textofFile;
     private JLabel jLabelEmptyHolderImage;
-    private ArrayList<Sequence> list;
+    private ArrayList<FastaSequence> list;
     private ArrayList<Rectangle> reclist;
     private JTable table;
     private ListSelectionModel listSelectionModel;
@@ -134,7 +135,7 @@ public class ORFVisualiser extends JFrame {
 
         reclist = new ArrayList<Rectangle>();
         int firstline = 10;
-        for (Sequence sequence : list) {
+        for (FastaSequence sequence : list) {
              firstline = firstline + 30;
              for (ORF orf : sequence) {
                  Random rand = new Random();
@@ -156,7 +157,7 @@ public class ORFVisualiser extends JFrame {
 
         System.out.println("got lengths" + list.size());
         int largest = 0;
-        for (Sequence sequence : list){
+        for (FastaSequence sequence : list){
             int Length = (int) sequence.getRealSize();
             if (Length > largest) {
                 largest = Length;
@@ -191,7 +192,7 @@ public class ORFVisualiser extends JFrame {
                 tableModel.setRowCount(0);
             }
 
-            for (Sequence sequence : list) {
+            for (FastaSequence sequence : list) {
                 table_list = sequence.makeTable_list();
                 for (String[] string : table_list) {
 
@@ -328,7 +329,7 @@ public class ORFVisualiser extends JFrame {
     }
     private void MakeORFlist(){
         ORFlist =  new HashMap<>();
-        for(Sequence sequence : list){
+        for(FastaSequence sequence : list){
             for(ORF orf : sequence){
                int ID =  orf.getID();
                ORFlist.put(ID,orf);
@@ -349,7 +350,7 @@ public class ORFVisualiser extends JFrame {
         textofFile.read(input, "READING FILE :)");
     }
     private void MakeSelected_Table(ArrayList<String> indexlist){
-
+        HashMap Selected_ORF_list = new HashMap();
         DefaultTableModel tableModel = null;
         Border blackline = BorderFactory.createLineBorder(Blue);
         Font titel = new Font("arial",Font.BOLD,16);
@@ -365,8 +366,8 @@ public class ORFVisualiser extends JFrame {
         }
         for(String index : indexlist){
             ORF orf = ORFlist.get(Integer.parseInt(index));
-
             String sequence = orfFinder.getOrf(orf);
+            Selected_ORF_list.put(orf,sequence);
             String[] value = new String[3];
             value[0] = index;
             value[1] = sequence;
@@ -388,6 +389,14 @@ public class ORFVisualiser extends JFrame {
 
         JButton upload_button = new JButton("UPLOAD");
         upload_button.setPreferredSize(new Dimension(140,20));
+        upload_button.addActionListener(e -> {
+            try {
+                DatabaseManager database = new DatabaseManager(Selected_ORF_list);
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
         JButton blast_button = new JButton("BLAST");
         blast_button.setPreferredSize(new Dimension(140,20));
 
@@ -409,12 +418,12 @@ public class ORFVisualiser extends JFrame {
         Blast_option_box.setOpaque(false);
         Blast_option_box.addActionListener( new Blast_Actionlistner());
 
-
         sidepanel.add(selected_table_scrollpane);
         sidepanel.add(upload_button);
         sidepanel.add(blast_button);
         sidepanel.add(Blast_option_box);
     }
+
     private void MakeSidePanel(ArrayList<String> indexlist){
         Border blackline = BorderFactory.createLineBorder(Blue);
         Font titel = new Font("arial",Font.BOLD,16);
@@ -459,6 +468,7 @@ public class ORFVisualiser extends JFrame {
             }
         }
     }
+
     class Blast_Actionlistner implements java.awt.event.ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -491,7 +501,7 @@ public class ORFVisualiser extends JFrame {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    list = reader.getSeq_list();
+                    list = orfFinder.getInfoForVisualisation();
                     MakeORFlist();
                     ORFtable();
                     //reclist = makeRec();
