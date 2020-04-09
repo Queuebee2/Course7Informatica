@@ -8,12 +8,13 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class ORFVisualiser extends JFrame {
     private JFrame mainFrame;
@@ -175,10 +176,12 @@ public class ORFVisualiser extends JFrame {
     }
 
     private void ORFtable() {
+        Border blackline = BorderFactory.createLineBorder(Blue);
+        Font titel = new Font("arial",Font.BOLD,16);
         DefaultTableModel tableModel = null;
         ArrayList<String[]> table_list = new ArrayList<String[]>();
         if (table == null) {
-            String[] columnNames = {"Sequence ID", "Start", "End", "Length", "ID", "parent Sequence"};
+            String[] columnNames = {"Sequence ID", "Start", "End", "Length", "ID"};
             tableModel = new DefaultTableModel(columnNames, 0);
         }
         else{
@@ -195,6 +198,14 @@ public class ORFVisualiser extends JFrame {
                     tableModel.addRow(string);
                 }
                 table = new JTable(tableModel);
+                table.setBackground(lighter_black);
+                table.setForeground(Color.white);
+                JTableHeader header = table.getTableHeader();
+                header.setOpaque(false);
+                header.setFont(titel);
+                header.setBackground(Blue);
+                header.setForeground(Color.white);
+                table.setBorder(blackline);
                 table.setCellSelectionEnabled(true);
                 table.setModel(tableModel);
                 table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -205,6 +216,7 @@ public class ORFVisualiser extends JFrame {
                 //sp.repaint();
                 sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
                 sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                sp.setBorder(blackline);
                 sp.setViewportView(table);
                 listSelectionModel = table.getSelectionModel();
                 listSelectionModel.addListSelectionListener(
@@ -335,9 +347,11 @@ public class ORFVisualiser extends JFrame {
                                 file)));
         textofFile.read(input, "READING FILE :)");
     }
-    private void MakeSidePanel(ArrayList<String> indexlist){
+    private void MakeSelected_Table(ArrayList<String> indexlist){
         DefaultTableModel tableModel = null;
-        sidepanel = new JPanel();
+        Border blackline = BorderFactory.createLineBorder(Blue);
+        Font titel = new Font("arial",Font.BOLD,16);
+        Font combotitel = new Font("arial",Font.BOLD,13);
         if ( selected_table == null) {
             String[] columnNames = {"ID", "Sequence"};
             tableModel = new DefaultTableModel(columnNames, 0);
@@ -348,30 +362,67 @@ public class ORFVisualiser extends JFrame {
             tableModel.setRowCount(0);
         }
         for(String index : indexlist){
-           ORF orf = ORFlist.get(Integer.parseInt(index));
+            ORF orf = ORFlist.get(Integer.parseInt(index));
 
-           String sequence = orfFinder.getOrf(orf);
-           String[] value = new String[3];
-           value[0] = index;
-           value[1] = sequence;
-           tableModel.addRow(value);
+            String sequence = orfFinder.getOrf(orf);
+            String[] value = new String[3];
+            value[0] = index;
+            value[1] = sequence;
+            tableModel.addRow(value);
         }
         selected_table = new JTable(tableModel);
         selected_table.setModel(tableModel);
         tableModel.fireTableDataChanged();
         selected_table.repaint();
+        selected_table.setPreferredSize(new Dimension(1000,1000));
         System.out.println(indexlist);
 
-        sidepanel.setBackground(DarkBlue);
-        sidepanel.setLayout(new BorderLayout(5,5));
-        sidepanel.setPreferredSize(new Dimension(300,1000));
-
-
-        selected_table.setPreferredSize(new Dimension(1000,300));
-
         JScrollPane selected_table_scrollpane = new JScrollPane();
+        selected_table_scrollpane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        selected_table_scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         selected_table_scrollpane.setViewportView(selected_table);
-        sidepanel.add(selected_table_scrollpane,BorderLayout.NORTH);
+        selected_table_scrollpane.setBorder(blackline);
+        selected_table_scrollpane.setPreferredSize(new Dimension(280,480));
+
+        JButton upload_button = new JButton("UPLOAD");
+        upload_button.setPreferredSize(new Dimension(140,20));
+        JButton blast_button = new JButton("BLAST");
+        blast_button.setPreferredSize(new Dimension(140,20));
+
+        selected_table.setBackground(lighter_black);
+        selected_table.setForeground(Color.white);
+        selected_table.setBorder(blackline);
+        JTableHeader header = selected_table.getTableHeader();
+        header.setOpaque(false);
+        header.setFont(titel);
+        header.setBackground(Blue);
+        header.setForeground(Color.white);
+
+        String[] BLAST_types = { "BLASTn", "tBLASTx","BLASTx" };
+        JComboBox<String> Blast_option_box = new JComboBox<>(BLAST_types);
+        Blast_option_box.setPreferredSize(new Dimension(280,30));
+        Blast_option_box.setBackground(DarkBlue);
+        Blast_option_box.setForeground(Color.black);
+        Blast_option_box.setFont(combotitel);
+        Blast_option_box.setOpaque(false);
+        Blast_option_box.addActionListener( new Blast_Actionlistner());
+
+
+        sidepanel.add(selected_table_scrollpane);
+        sidepanel.add(upload_button);
+        sidepanel.add(blast_button);
+        sidepanel.add(Blast_option_box);
+    }
+    private void MakeSidePanel(ArrayList<String> indexlist){
+        Border blackline = BorderFactory.createLineBorder(Blue);
+        Font titel = new Font("arial",Font.BOLD,16);
+        sidepanel = new JPanel();
+
+        sidepanel.setBackground(black);
+        sidepanel.setLayout(new FlowLayout());
+        sidepanel.setPreferredSize(new Dimension(300,1000));
+        sidepanel.setBorder(blackline);
+        MakeSelected_Table(indexlist);
 
         sidepanel.validate();
         sidepanel.repaint();
@@ -404,6 +455,14 @@ public class ORFVisualiser extends JFrame {
                 }
 
             }
+        }
+    }
+    class Blast_Actionlistner implements java.awt.event.ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JComboBox cb = (JComboBox)e.getSource();
+            String petName = (String)cb.getSelectedItem();
+            System.out.println(petName);;
         }
     }
     class MenuItemListener implements ActionListener {
