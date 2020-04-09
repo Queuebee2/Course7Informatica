@@ -56,33 +56,37 @@ public class DatabaseManager {
         }
     }
     public void insert() throws SQLException {
+        int nRowsInserted = 0;
         for(ORF orf : Selected_ORFs.keySet()){
             // all id are auto increment
             String ORFtable_ORF_sequence = Selected_ORFs.get(orf);
             int ORFtable_start = (int) orf.getCounterStart();
             int ORFtable_stop = (int) orf.counterEnd;
-            String Sequencetable_header = "";
-            String Sequencetable_filename = "" ;
-            int Sequencetable_orfs_found = 0;
 
+            String Sequencetable_header = orf.parentFastaSequence.header;
+            String Sequencetable_filename = orf.parentFastaSequence.filename;
+            int Sequencetable_orfs_found = orf.parentFastaSequence.completedOrfCount;
+            int Sequencetable_length = (int) orf.parentFastaSequence.RealSize;
 
-            //ORF id : auto increment
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO sequence (header,filename,orfs_found,total_length) VALUES (?, ?, ?, ?);");
+            preparedStatement.setString(1, Sequencetable_header);
+            preparedStatement.setString(2, "wtf"); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden 
+            preparedStatement.setInt(3, Sequencetable_orfs_found);
+            preparedStatement.setInt(4, Sequencetable_length);
+            nRowsInserted += preparedStatement.executeUpdate();
+
+            int last_id = Integer.parseInt(getlatestid()); // TODO: 9-4-2020 make this work 
+
+            PreparedStatement preparedStatement2 = connection.prepareStatement("INSERT INTO ORF (Sequence_id, start_position, stop_position, ORF_Sequence ) VALUES (?, ?, ?, ?);");
+            preparedStatement2.setInt(1, last_id);
+            preparedStatement2.setInt(2, ORFtable_start);
+            preparedStatement2.setInt(3, ORFtable_stop);
+            preparedStatement2.setString(4, ORFtable_ORF_sequence);
+            nRowsInserted += preparedStatement2.executeUpdate();
 
 
         }
-        int nRowsInserted = 0;
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO test (name, quantity) VALUES (?, ?);");
-        preparedStatement.setString(1, "banana");
-        preparedStatement.setInt(2, 150);
-        nRowsInserted += preparedStatement.executeUpdate();
 
-        preparedStatement.setString(1, "orange");
-        preparedStatement.setInt(2, 154);
-        nRowsInserted += preparedStatement.executeUpdate();
-
-        preparedStatement.setString(1, "apple");
-        preparedStatement.setInt(2, 100);
-        nRowsInserted += preparedStatement.executeUpdate();
         System.out.println(String.format("Inserted %d row(s) of data.", nRowsInserted));
     }
     public void download() throws SQLException {
@@ -122,6 +126,26 @@ public class DatabaseManager {
             throw new SQLException("Encountered an error when executing given sql statement.", e);
         }
         System.out.println("Execution finished.");
+    }
+    public String getlatestid() throws SQLException {
+        String outputString = "";
+        try {
+
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT id FROM sequence  \n" +
+                    "ORDER BY id DESC  \n" +
+                    "LIMIT 1;  ");
+            while (results.next()) {
+                outputString =
+                        String.format(
+                                "Data row = (%s)",
+                                results.getString(1));
+
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Encountered an error when executing given sql statement", e);
+        }
+        return outputString;
     }
 }
 

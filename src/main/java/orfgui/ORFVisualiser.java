@@ -392,6 +392,7 @@ public class ORFVisualiser extends JFrame {
         upload_button.addActionListener(e -> {
             try {
                 DatabaseManager database = new DatabaseManager(Selected_ORF_list);
+                database.insert();
 
             } catch (SQLException ex) {
                 ex.printStackTrace();

@@ -6,7 +6,7 @@ import java.util.Iterator;
 public class FastaSequence implements Iterable<ORF> {
 
 
-    final String header;
+    public final String header;
     public String filename;
     final int SequenceID;
     private static int IDIncrement = 0;
@@ -14,6 +14,7 @@ public class FastaSequence implements Iterable<ORF> {
     final long offset;      // in file
     public long EndPos;
     public long RealSize;
+    public int completedOrfCount;
     private ArrayList<String[]> tablelist;
 
     private  ArrayList<ORF> ORFList = new ArrayList<ORF>();
@@ -78,7 +79,7 @@ public class FastaSequence implements Iterable<ORF> {
         long averageOrfLength = 0;
         long shortestOrfLength= 0;
         long longestOrfLength= 0;
-        int completedOrfCount = 0;
+         completedOrfCount = 0;
         int incompleteOrfCount = 0;
 
         long size;
