@@ -112,7 +112,7 @@
 <Hit>
   <Hit_num>4</Hit_num>
   <Hit_id>gi|1189419115|gb|CP018157.1|</Hit_id>
-  <Hit_def>Oryza sativa Indica Group cultivar Shuhui498 chromosome 1 sequence</Hit_def>
+  <Hit_def>Oryza sativa Indica Group cultivar Shuhui498 chromosome 1 fastaSequence</Hit_def>
   <Hit_accession>CP018157</Hit_accession>
   <Hit_len>44361539</Hit_len>
   <Hit_hsps>
@@ -140,7 +140,7 @@
 <Hit>
   <Hit_num>5</Hit_num>
   <Hit_id>gi|937893927|dbj|AP014957.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 1, cultivar: Nipponbare, complete sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 1, cultivar: Nipponbare, complete fastaSequence</Hit_def>
   <Hit_accession>AP014957</Hit_accession>
   <Hit_len>43270923</Hit_len>
   <Hit_hsps>
@@ -168,7 +168,7 @@
 <Hit>
   <Hit_num>6</Hit_num>
   <Hit_id>gi|932283207|gb|CP012616.1|</Hit_id>
-  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 8 sequence</Hit_def>
+  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 8 fastaSequence</Hit_def>
   <Hit_accession>CP012616</Hit_accession>
   <Hit_len>28124818</Hit_len>
   <Hit_hsps>
@@ -196,7 +196,7 @@
 <Hit>
   <Hit_num>7</Hit_num>
   <Hit_id>gi|932282494|gb|CP012609.1|</Hit_id>
-  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 1 sequence</Hit_def>
+  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 1 fastaSequence</Hit_def>
   <Hit_accession>CP012609</Hit_accession>
   <Hit_len>44526634</Hit_len>
   <Hit_hsps>
@@ -224,7 +224,7 @@
 <Hit>
   <Hit_num>8</Hit_num>
   <Hit_id>gi|156765894|dbj|AK289267.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group cDNA, clone: J100089F08, full insert sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group cDNA, clone: J100089F08, full insert fastaSequence</Hit_def>
   <Hit_accession>AK289267</Hit_accession>
   <Hit_len>2399</Hit_len>
   <Hit_hsps>
@@ -252,7 +252,7 @@
 <Hit>
   <Hit_num>9</Hit_num>
   <Hit_id>gi|116013028|dbj|AK243663.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group cDNA, clone: J100089F08, full insert sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group cDNA, clone: J100089F08, full insert fastaSequence</Hit_def>
   <Hit_accession>AK243663</Hit_accession>
   <Hit_len>3045</Hit_len>
   <Hit_hsps>
@@ -476,7 +476,7 @@
 <Hit>
   <Hit_num>17</Hit_num>
   <Hit_id>gi|937906879|dbj|AP014959.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 3, cultivar: Nipponbare, complete sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 3, cultivar: Nipponbare, complete fastaSequence</Hit_def>
   <Hit_accession>AP014959</Hit_accession>
   <Hit_len>36413819</Hit_len>
   <Hit_hsps>
@@ -504,7 +504,7 @@
 <Hit>
   <Hit_num>18</Hit_num>
   <Hit_id>gi|44681488|gb|AC146521.2|</Hit_id>
-  <Hit_def>Oryza sativa chromosome 3 B1246D11 genomic sequence, complete sequence</Hit_def>
+  <Hit_def>Oryza sativa chromosome 3 B1246D11 genomic fastaSequence, complete fastaSequence</Hit_def>
   <Hit_accession>AC146521</Hit_accession>
   <Hit_len>43277</Hit_len>
   <Hit_hsps>
@@ -532,7 +532,7 @@
 <Hit>
   <Hit_num>19</Hit_num>
   <Hit_id>gi|18201762|gb|AC091733.3|</Hit_id>
-  <Hit_def>Genomic sequence for Oryza sativa, Nipponbare strain, clone OSJNBa0048F08, from chromosome 3, complete sequence</Hit_def>
+  <Hit_def>Genomic fastaSequence for Oryza sativa, Nipponbare strain, clone OSJNBa0048F08, from chromosome 3, complete fastaSequence</Hit_def>
   <Hit_accession>AC091733</Hit_accession>
   <Hit_len>155790</Hit_len>
   <Hit_hsps>
@@ -560,7 +560,7 @@
 <Hit>
   <Hit_num>20</Hit_num>
   <Hit_id>gi|60301588|gb|AC147869.3|</Hit_id>
-  <Hit_def>Monodelphis domestica clone VMRC6-113K21, complete sequence</Hit_def>
+  <Hit_def>Monodelphis domestica clone VMRC6-113K21, complete fastaSequence</Hit_def>
   <Hit_accession>AC147869</Hit_accession>
   <Hit_len>157763</Hit_len>
   <Hit_hsps>
@@ -756,7 +756,7 @@
 <Hit>
   <Hit_num>27</Hit_num>
   <Hit_id>gi|937928473|dbj|AP014964.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 8, cultivar: Nipponbare, complete sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 8, cultivar: Nipponbare, complete fastaSequence</Hit_def>
   <Hit_accession>AP014964</Hit_accession>
   <Hit_len>28443022</Hit_len>
   <Hit_hsps>
@@ -784,7 +784,7 @@
 <Hit>
   <Hit_num>28</Hit_num>
   <Hit_id>gi|924563519|gb|CP012528.1|</Hit_id>
-  <Hit_def>Drosophila busckii chromosome X sequence</Hit_def>
+  <Hit_def>Drosophila busckii chromosome X fastaSequence</Hit_def>
   <Hit_accession>CP012528</Hit_accession>
   <Hit_len>23724088</Hit_len>
   <Hit_hsps>
@@ -1092,7 +1092,7 @@
 <Hit>
   <Hit_num>39</Hit_num>
   <Hit_id>gi|1189419123|gb|CP018165.1|</Hit_id>
-  <Hit_def>Oryza sativa Indica Group cultivar Shuhui498 chromosome 9 sequence</Hit_def>
+  <Hit_def>Oryza sativa Indica Group cultivar Shuhui498 chromosome 9 fastaSequence</Hit_def>
   <Hit_accession>CP018165</Hit_accession>
   <Hit_len>24760661</Hit_len>
   <Hit_hsps>
@@ -1148,7 +1148,7 @@
 <Hit>
   <Hit_num>41</Hit_num>
   <Hit_id>gi|937931852|dbj|AP014965.1|</Hit_id>
-  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 9, cultivar: Nipponbare, complete sequence</Hit_def>
+  <Hit_def>Oryza sativa Japonica Group DNA, chromosome 9, cultivar: Nipponbare, complete fastaSequence</Hit_def>
   <Hit_accession>AP014965</Hit_accession>
   <Hit_len>23012720</Hit_len>
   <Hit_hsps>
@@ -1204,7 +1204,7 @@
 <Hit>
   <Hit_num>43</Hit_num>
   <Hit_id>gi|932283291|gb|CP012617.1|</Hit_id>
-  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 9 sequence</Hit_def>
+  <Hit_def>Oryza sativa Indica Group cultivar RP Bio-226 chromosome 9 fastaSequence</Hit_def>
   <Hit_accession>CP012617</Hit_accession>
   <Hit_len>20520899</Hit_len>
   <Hit_hsps>
@@ -1288,7 +1288,7 @@
 <Hit>
   <Hit_num>46</Hit_num>
   <Hit_id>gi|519687763|gb|JX581658.1|</Hit_id>
-  <Hit_def>Gossypium hirsutum clone NBRI_GE14330 microsatellite sequence</Hit_def>
+  <Hit_def>Gossypium hirsutum clone NBRI_GE14330 microsatellite fastaSequence</Hit_def>
   <Hit_accession>JX581658</Hit_accession>
   <Hit_len>359</Hit_len>
   <Hit_hsps>

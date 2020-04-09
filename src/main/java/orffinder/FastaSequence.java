@@ -6,7 +6,6 @@ import java.util.Iterator;
 public class FastaSequence implements Iterable<ORF> {
 
     final String header;
-    String filename;
     final int SequenceID;
     private static int IDIncrement = 0;
     final long lineNumber;
@@ -19,7 +18,7 @@ public class FastaSequence implements Iterable<ORF> {
     private  ArrayList<ORF>[] ORFTrackers =  new ArrayList[3];
 //final ArrayList<ArrayList<ORF>> ORFTrackers = new ArrayList < ArrayList < ORF >> (3); // if above doesnt work
 
-    public FastaSequence(String filename, String currHeader, int currentTextLine, int position) {
+    public FastaSequence(String currHeader, int currentTextLine, int position) {
         SequenceID = IDIncrement++;
         header = currHeader;
         lineNumber = currentTextLine;
@@ -117,7 +116,7 @@ public class FastaSequence implements Iterable<ORF> {
             statistics.append(" StartCounter=").append(o.getCounterStart());
             statistics.append(" EndCounter=").append(o.counterEnd);
             statistics.append(" ID: ").append(o.getID());
-            statistics.append(" PARENT: ").append(o.parentSequence);
+            statistics.append(" PARENT: ").append(o.parentFastaSequence);
 
         }
 

@@ -39,7 +39,7 @@ public class ORFFinder {
     private static final long MASK_5 = 0xFFFFFFFFFFL;
 
     static String filename_RELATIVE_TEMP = "src/test/resources/data/Glennie the platypus.fa";
-    private final ArrayList<FastaSequence> sequences = new ArrayList<FastaSequence>(100);
+    private final ArrayList<FastaSequence> fastaSequences = new ArrayList<FastaSequence>(100);
     private File file;
     private RandomAccessFile mainRAFile;
     private FileChannel mainFileChannel;
@@ -88,7 +88,7 @@ public class ORFFinder {
         int currentTextLine;
 
         // initialise some
-        FastaSequence currentSequence = null;
+        FastaSequence currentFastaSequence = null;
         position = 0;
         charCounter = 0;
         currentTextLine = 0;
@@ -144,10 +144,10 @@ public class ORFFinder {
                     // header line start (>) marks start of new sequence object
                     case HEADER: // >
                         // if sequence object was made, end it here at the start of a new header
-                        if (currentSequence != null) {
-                            currentSequence.EndPos = position;          // TODO: 6-4-2020 make private? use setter?
-                            currentSequence.RealSize = charCounter + 1;
-                            //currentSequence.getStatistics();
+                        if (currentFastaSequence != null) {
+                            currentFastaSequence.EndPos = position;          // TODO: 6-4-2020 make private? use setter?
+                            currentFastaSequence.RealSize = charCounter + 1;
+                            //currentFastaSequence.getStatistics();
                         }
                         // build the string of the new header (thanks java for not being nice with string concat)
                         currHeader = new StringBuilder();
@@ -163,17 +163,17 @@ public class ORFFinder {
                         } //end while headerbuilder
 
                         currentTextLine++;
-                        currentSequence = new FastaSequence(filename, currHeader.toString(), currentTextLine, position);
+                        currentFastaSequence = new FastaSequence(currHeader.toString(), currentTextLine, position);
 
                         currHeader = null;
-                        sequences.add(currentSequence);
+                        fastaSequences.add(currentFastaSequence);
                         charCounter = 0;
                         continue; // do not increment position but continue
 
 
                         // check orf start
                     case A:
-                        assert currentSequence != null : "NO FUCKING DNA";
+                        assert currentFastaSequence != null : "NO FUCKING DNA";
 
                         // put byes 0,1,2 of buffer.getInt into currentCodon
                         // (read 4 bytes from here but only use first 3 )
@@ -181,14 +181,14 @@ public class ORFFinder {
 
 
                         if (currentCodonLong == ATG) {
-                            currentSequence.addNewORF(position, charCounter, charCounter % 3);
+                            currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
 
                         } else {
                             // if 0,1,3 bytes wasn't enough, check 5 bytes briefly too
                             currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
 
                             if (currentCodonLong == ATG) {
-                                currentSequence.addNewORF(position, charCounter, charCounter % 3);
+                                currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
                             }
                         }
 
@@ -196,17 +196,17 @@ public class ORFFinder {
 
                     // check if orf ends
                     case T:
-                        assert currentSequence != null : "NO FUCKING DNA";
+                        assert currentFastaSequence != null : "NO FUCKING DNA";
 
                         currentCodonLong = buffer.getInt(position) & MASK_3;
 
                         if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
-                            currentSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
+                            currentFastaSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
 
                         } else {
                             currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
                             if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
-                                currentSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
+                                currentFastaSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
 
                             }
                         }
@@ -224,13 +224,13 @@ public class ORFFinder {
             } // end while loop that reads over file
 
             // round up the last sequence made (if any were made)
-            if (currentSequence != null) {
-                if (currentSequence.EndPos == 0) {
-                    currentSequence.EndPos = lastValidDNACharacterPos;
-                    currentSequence.RealSize = charCounter + 1;
+            if (currentFastaSequence != null) {
+                if (currentFastaSequence.EndPos == 0) {
+                    currentFastaSequence.EndPos = lastValidDNACharacterPos;
+                    currentFastaSequence.RealSize = charCounter + 1;
                 }
             }
-            //currentSequence.getStatistics();
+            //currentFastaSequence.getStatistics();
 
 
         // Print logged time
@@ -240,7 +240,7 @@ public class ORFFinder {
     }
 
     public void printStats() {
-        for (FastaSequence seq : sequences) {
+        for (FastaSequence seq : fastaSequences) {
             seq.getStatistics();
         }
     }
@@ -303,7 +303,7 @@ public class ORFFinder {
         System.out.println("getting all ORFS...");
         String orfString;
         int orfsFound = 0;
-        for (FastaSequence seq : sequences
+        for (FastaSequence seq : fastaSequences
         ) {
             for (ORF orf : seq
             ) {
@@ -343,7 +343,8 @@ public class ORFFinder {
 
 
     public ArrayList<FastaSequence> getInfoForVisualisation() {
-        return new ArrayList<>(sequences);
+
+        return new ArrayList<>(fastaSequences);
     }
 
 
