@@ -3,6 +3,7 @@ import helpers.Reader;
 import orffinder.ORF;
 import orffinder.ORFFinder;
 import orffinder.Sequence;
+import org.forester.archaeopteryx.tools.Blast;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -461,8 +462,8 @@ public class ORFVisualiser extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JComboBox cb = (JComboBox)e.getSource();
-            String petName = (String)cb.getSelectedItem();
-            System.out.println(petName);;
+            String Blasttype = (String)cb.getSelectedItem();
+            System.out.println(Blasttype);;
         }
     }
     class MenuItemListener implements ActionListener {
