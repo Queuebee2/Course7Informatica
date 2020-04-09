@@ -1,7 +1,7 @@
 package HelperTests;
 
 import helpers.FastaConverter;
-import orffinder.Sequence;
+import orffinder.FastaSequence;
 
 // todo test setting file somewhere randomly in pc, already existing files, non-text files...
 // ... overwrite mode? ... god so many things to account for and we haven't even scraped the surface
@@ -11,7 +11,7 @@ public class TestFastaConverter {
 
         FastaConverter fc = new FastaConverter();
 
-        Sequence seq = new Sequence("sequence 1", 0, 0);
+        FastaSequence seq = new FastaSequence("sequence 1", 0, 0);
         seq.EndPos = 100;
         seq.RealSize= 90;
 

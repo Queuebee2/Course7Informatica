@@ -9,7 +9,7 @@ public class VisualisatiePane extends JPanel {
     private ArrayList<Rectangle> reclist;
     private ArrayList<FastaSequence> seq_list;
 
-    VisualisatiePane(ArrayList<FastaSequence> list, ArrayList<Rectangle> rectlist) {
+    VisualisatiePane(ArrayList<FastaSequence> list, ArrayList<orfgui.Rectangle> rectlist) {
         seq_list = list;
         reclist = rectlist;
     }

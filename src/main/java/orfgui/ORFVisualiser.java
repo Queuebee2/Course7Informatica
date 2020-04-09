@@ -135,9 +135,9 @@ public class ORFVisualiser extends JFrame {
 
         reclist = new ArrayList<Rectangle>();
         int firstline = 10;
-        for (FastaSequence sequence : list) {
+        for (FastaSequence fastaSequence : list) {
              firstline = firstline + 30;
-             for (ORF orf : sequence) {
+             for (ORF orf : fastaSequence) {
                  Random rand = new Random();
                  int start = (int) orf.getCounterStart();
                  int size = (int) orf.getSize();
@@ -157,8 +157,8 @@ public class ORFVisualiser extends JFrame {
 
         System.out.println("got lengths" + list.size());
         int largest = 0;
-        for (FastaSequence sequence : list){
-            int Length = (int) sequence.getRealSize();
+        for (FastaSequence fastaSequence : list){
+            int Length = (int) fastaSequence.getRealSize();
             if (Length > largest) {
                 largest = Length;
                 System.out.println(largest);
@@ -183,7 +183,7 @@ public class ORFVisualiser extends JFrame {
         DefaultTableModel tableModel = null;
         ArrayList<String[]> table_list = new ArrayList<String[]>();
         if (table == null) {
-            String[] columnNames = {"Sequence ID", "Start", "End", "Length", "ID"};
+            String[] columnNames = {"FastaSequence ID", "Start", "End", "Length", "ID"};
             tableModel = new DefaultTableModel(columnNames, 0);
         }
         else{
@@ -192,8 +192,8 @@ public class ORFVisualiser extends JFrame {
                 tableModel.setRowCount(0);
             }
 
-            for (FastaSequence sequence : list) {
-                table_list = sequence.makeTable_list();
+            for (FastaSequence fastaSequence : list) {
+                table_list = fastaSequence.makeTable_list();
                 for (String[] string : table_list) {
 
                     //System.out.println(Arrays.toString(string));
@@ -329,8 +329,8 @@ public class ORFVisualiser extends JFrame {
     }
     private void MakeORFlist(){
         ORFlist =  new HashMap<>();
-        for(FastaSequence sequence : list){
-            for(ORF orf : sequence){
+        for(FastaSequence fastaSequence : list){
+            for(ORF orf : fastaSequence){
                int ID =  orf.getID();
                ORFlist.put(ID,orf);
             }
@@ -356,7 +356,7 @@ public class ORFVisualiser extends JFrame {
         Font titel = new Font("arial",Font.BOLD,16);
         Font combotitel = new Font("arial",Font.BOLD,13);
         if ( selected_table == null) {
-            String[] columnNames = {"ID", "Sequence"};
+            String[] columnNames = {"ID", "FastaSequence"};
             tableModel = new DefaultTableModel(columnNames, 0);
         }
         else{
