@@ -5,6 +5,7 @@ import orffinder.FastaSequence;
 import orffinder.ORF;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -78,39 +79,39 @@ public class DatabaseManager {
     public void insert(HashMap<ORF,String> selected_ORF_list) throws SQLException {
 
         Selected_ORFs = selected_ORF_list;
+        ArrayList<FastaSequence> seqlist = new ArrayList<>();
         int nRowsInserted = 0;
         System.out.println("amount of orfs selected: " + Selected_ORFs.size());
 
-//        for(ORF orf : Selected_ORFs.keySet()){
-//            int id = orf.parentFastaSequence.SequenceID;              //todo ? problem: if multiple sequences, what do we do?
-//                                                                      //todo: sort selected orfs into buckets of Sequence:<orflist>
-//        }
+      for(ORF orf : Selected_ORFs.keySet()){
+          FastaSequence seq = orf.getParentFastaSequence();           //todo ? problem: if multiple sequences, what do we do?
+          if (!seqlist.contains(seq)){
+                seqlist.add(seq);                                                 // todo: sort selected orfs into buckets of Sequence:<orflist>
+          }
+          }
 
+      for (FastaSequence seq : seqlist){
+          String Sequencetable_header = seq.header;
+          String Sequencetable_filename = seq.getFilename();
+          int Sequencetable_orfs_found = seq.completedOrfCount;
+          int Sequencetable_length = (int) seq.RealSize;
+
+          PreparedStatement preparedStatement = connection.prepareStatement(
+                  "INSERT INTO sequence " +
+                          "(header,filename,orfs_found,total_length) " +
+                          "VALUES (?, ?, ?, ?);");
+          preparedStatement.setString(1, Sequencetable_header);
+          preparedStatement.setString(2, Sequencetable_filename); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden
+          preparedStatement.setInt(3, Sequencetable_orfs_found);
+          preparedStatement.setInt(4, Sequencetable_length);
+          nRowsInserted += preparedStatement.executeUpdate();
+      }
         for(ORF orf : Selected_ORFs.keySet()){
             // all id are auto increment
             String ORFtable_ORF_sequence = Selected_ORFs.get(orf);
-            int ORFtable_start = (int) orf.getCounterStart();
+            int ORFtable_start = orf.getStartPosInSequence();
             int ORFtable_stop = (int) orf.counterEnd;
 
-            String Sequencetable_header = orf.getParentFastaSequence().header;
-            String Sequencetable_filename = orf.getParentFastaSequence().getFilename();
-            int Sequencetable_orfs_found = orf.getParentFastaSequence().completedOrfCount;
-            int Sequencetable_length = (int) orf.getParentFastaSequence().RealSize;
-
-            if (Sequencetable_filename == null) {
-                Sequencetable_filename = "STILL DOESNT WORK"; //TODO check
-            }
-
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO sequence " +
-                            "(header,filename,orfs_found,total_length) " +
-                    "VALUES (?, ?, ?, ?);");
-
-            preparedStatement.setString(1, Sequencetable_header);
-            preparedStatement.setString(2, Sequencetable_filename); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden
-            preparedStatement.setInt(3, Sequencetable_orfs_found);
-            preparedStatement.setInt(4, Sequencetable_length);
-            nRowsInserted += preparedStatement.executeUpdate();
 
             int last_id = Integer.parseInt(getlatestid()); // TODO: 9-4-2020 make this work     // TODO TRY getLatestIdByHeader (new method, pass seq or header&filename)
 
