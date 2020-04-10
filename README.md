@@ -28,4 +28,4 @@ ORFs should now automatically be determined for each sequence (determined by > h
 To save ORFs, select the ORFs  and press `UPLOAD`.
 
 ### Blasting ORFs
-this feature isn't implemented in the current release.
+select orfs and press `BLAST`. Don't try selecting any other algorithm, they haven't been implemented
