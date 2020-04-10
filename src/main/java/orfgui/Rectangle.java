@@ -1,6 +1,9 @@
 package orfgui;
 import java.awt.*;
 
+/**
+ * Rectangle object contains all information needed to draw a rectangle in  a random color
+ */
 public class Rectangle {
 
         private int width;
