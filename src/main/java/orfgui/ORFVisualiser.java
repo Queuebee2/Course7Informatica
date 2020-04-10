@@ -141,7 +141,7 @@ public class ORFVisualiser extends JFrame {
              firstline = firstline + 30;
              for (ORF orf : fastaSequence) {
                  Random rand = new Random();
-                 int start = (int) orf.getCounterStart();
+                 int start = (int) orf.getStartPosInSequence();
                  int size = (int) orf.getSize();
                  Color randomColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
                  Rectangle rec = new Rectangle(10 + start, firstline + 5, size, 10, randomColor);

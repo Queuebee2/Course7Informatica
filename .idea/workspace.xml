@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="Course7Informatica:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="163cad63-154e-4643-9941-4070260d818e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORF.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orfgui/ORFVisualiser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orfgui/ORFVisualiser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,6 +35,10 @@
     <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="PropertiesComponent">
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+    <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="course7informatica" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
@@ -42,11 +48,11 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Global Libraries" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.other" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -60,7 +66,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.TestORFFinder">
+  <component name="RunManager" selected="Application.app">
     <configuration name="TestBlastProgramEnum" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="BlastTests.TestBlastProgramEnum" />
       <module name="Course7Informatica" />
@@ -113,14 +119,23 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="app" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="app" />
+      <module name="Course7Informatica" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Application.TestORFVis" />
       <item itemvalue="Application.TestBlastProgramEnum" />
       <item itemvalue="Application.TestORFBlaster" />
       <item itemvalue="Application.TestORFFinder" />
+      <item itemvalue="Application.app" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.app" />
         <item itemvalue="Application.TestORFFinder" />
         <item itemvalue="Application.TestORFBlaster" />
         <item itemvalue="Application.TestORFVis" />
