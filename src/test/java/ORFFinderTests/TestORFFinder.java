@@ -13,17 +13,18 @@ public class TestORFFinder {
     public static void main(String[] args) {
         try {
             File testfile = new File("src/test/resources/data/Glennie_the_platypus.fa");
-            ORFFinder orfFinder = new ORFFinder(testfile);
+            ORFFinder orfFinder = new ORFFinder();
+            orfFinder.setFile(testfile);
             orfFinder.findOrfs();//
             orfFinder.printStats();
             orfFinder.getallOrfs();
-            ArrayList<FastaSequence> bob = orfFinder.getInfoForVisualisation();
-
+            ArrayList<FastaSequence> bob = orfFinder.getFastaSequences();
 
             for ( FastaSequence sequence  : bob   ) {
+
                 int count = 0;
                 for ( ORF orf : sequence ) {
-                    System.out.println(orfFinder.getOrf(orf));
+                    System.out.println(orf.toFastaFormat());
                     count++;
                     if (count > 10) {
                         break;

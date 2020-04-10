@@ -493,7 +493,8 @@ public class ORFVisualiser extends JFrame {
                     Reader reader = new Reader();
                     File file = reader.FileChooser();
                     try {
-                        orfFinder = new ORFFinder(file);
+                        orfFinder = new ORFFinder();
+                        orfFinder.setFile(file);
                         orfFinder.findOrfs();
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -504,7 +505,7 @@ public class ORFVisualiser extends JFrame {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    list = orfFinder.getInfoForVisualisation();
+                    list = orfFinder.getFastaSequences();
                     MakeORFlist();
                     ORFtable();
                     //reclist = makeRec();
