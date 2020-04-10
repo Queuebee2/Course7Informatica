@@ -178,6 +178,7 @@ public class ORFVisualiser extends JFrame {
                  //start position of orf
                  int start = (int) orf.getStartPosInSequence();
                  //size of the orf
+
                  int size = (int) orf.getSize();
                  //random color of the orf rectangle
                  Color randomColor = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());

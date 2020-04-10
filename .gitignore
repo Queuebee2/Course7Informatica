@@ -2,3 +2,5 @@
 src/test/resources/data/DNA.txt
 target/*
 
+
+classes/

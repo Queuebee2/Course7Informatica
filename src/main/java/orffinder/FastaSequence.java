@@ -100,7 +100,7 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
         for(ORF orf:ORFList){
             String[] orfvalue = new String[5];
             orfvalue[0] = String.valueOf(SequenceID);
-            orfvalue[1] = String.valueOf(orf.getCounterStart());
+            orfvalue[1] = String.valueOf(orf.getStartPosInFile());
             orfvalue[2] = String.valueOf(orf.counterEnd);
             orfvalue[3] = String.valueOf(orf.getSize());
             orfvalue[4] = String.valueOf(orf.getID());
@@ -156,7 +156,7 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
             statistics.append("\n\torf startpos=").append(o.getOffset());
             statistics.append(" endpos=").append(o.endpos);
             statistics.append(" RealSize=").append(o.getSize());
-            statistics.append(" StartCounter=").append(o.getCounterStart());
+            statistics.append(" StartCounter=").append(o.getEndPosInSequence());
             statistics.append(" EndCounter=").append(o.counterEnd);
             statistics.append(" ID: ").append(o.getID());
             statistics.append(" PARENT: ").append(o.getParentFastaSequence());
