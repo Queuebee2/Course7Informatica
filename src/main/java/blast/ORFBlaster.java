@@ -58,8 +58,7 @@ public  class  ORFBlaster  {
     }
 
     /**
-     * less generic, hardcoded blast-db combo methods
-     * got this from here https://github.com/swappyk/biojava/blob/master/biojava-ws/src/main/java/demo/NCBIQBlastServiceDemo.java
+     * method to blast
      */
     public void blast(String query, String algorithm, String database) {
 
@@ -94,10 +93,11 @@ public  class  ORFBlaster  {
                 writer.write(line + System.getProperty("line.separator"));
             }
         } catch (Exception e) {
+            // this is a java.lang.Exception. It hasn't been declared by biojava. mostly occurs with unable to retrieve rid;
             int optionType = JOptionPane.DEFAULT_OPTION; // YES+NO+CANCEL
             int messageType = JOptionPane.PLAIN_MESSAGE; // no standard icon
             ImageIcon icon = new ImageIcon("src/main/resources/idkwhy.gif", "blob");
-            int res = JOptionPane.showConfirmDialog(null, "Could'nt connect to BLAST \nWe don't know why\nError Message : 'Unable to retrieve request ID'", "No connection possible",
+            int res = JOptionPane.showConfirmDialog(null, "Couldn't connect to BLAST \nWe're not told why exactly\nError Message : '"+e.getMessage()+"'", "No connection possible",
                     optionType, messageType, icon);
             System.out.println(e.getMessage());
             e.printStackTrace();

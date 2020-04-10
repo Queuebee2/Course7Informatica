@@ -57,7 +57,7 @@ public class ORFVisualiser extends JFrame {
      * Constructor of ORFVisualiser makes basic gui
      * @throws SQLException Exception when there is a problem with connecting or uploading to MYSQL database
      */
-    public ORFVisualiser() throws SQLException {
+    public ORFVisualiser()  {
 
         //make loading screen
         new SplashScreenDemo();
@@ -92,7 +92,7 @@ public class ORFVisualiser extends JFrame {
      * prepares and makes visible, basic Frame and Controlpanel for later objects to be added
      * @throws SQLException Exception when there is a problem with connecting or uploading to MYSQL database
      */
-    private void prepareGUI() throws SQLException {
+    private void prepareGUI()  {
         //set the look of the application to match the operating system
         setLookAndFeel();
         //make the mainFrame
