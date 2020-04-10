@@ -25,8 +25,9 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
 //final ArrayList<ArrayList<ORF>> ORFTrackers = new ArrayList < ArrayList < ORF >> (3); // if above doesnt work
 
     public FastaSequence(ORFFinder finder, String filename, String currHeader, int currentTextLine, int position) {
-        SequenceID = IDIncrement++;
-        fastaFilename = filename;
+        this.SequenceID = IDIncrement++;
+        this.fastaFilename = filename;
+        this.finder = finder;
         header = currHeader;
         lineNumber = currentTextLine;
         offset = position; // in file

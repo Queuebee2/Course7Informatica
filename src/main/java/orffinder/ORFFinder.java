@@ -49,18 +49,18 @@ public class ORFFinder {
 
     }
 
-    public ORFFinder(File file) throws IOException {
-        file = file;
+    public ORFFinder()  {
+                        // SHOOT ME IN THE FOOT (took ~xxxhours to figure out)
+
+    }
+
+    public void setFile(File file) throws IOException {
+        this.file = file;
         mainRAFile = new RandomAccessFile(file, "r");
         mainFileChannel = mainRAFile.getChannel();
         //  mainBuffer = new RandomAccessFile(file, "r").getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size()); // as oneliner
         mainBuffer = mainFileChannel.map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size());
-        mainBuffer.order(ByteOrder.LITTLE_ENDIAN);                      // SHOOT ME IN THE FOOT (took ~xxxhours to figure out)
-
-    }
-
-    public void setFile(File file) {
-        this.file = file;
+        mainBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
 
@@ -70,11 +70,8 @@ public class ORFFinder {
      * using ordinal values as keys maybe? later?: ATG 658471, TAG 846571, TAA 846565, TGA 847165 (changed use of hashmaps to arraylist for now)
      * chars of interest and their ASCII values: (65, A) (84, T) (67, C) (71, G) (62, >)
      */
-    public void findOrfs() {
-        findOrfs(String.valueOf(file));
-    }
 
-    public void findOrfs(String filename) {
+    public void findOrfs() {
 
         // TIME LOGGING
         long startTime = System.nanoTime();
@@ -163,7 +160,7 @@ public class ORFFinder {
                     } //end while headerbuilder
 
                     currentTextLine++;
-                    currentFastaSequence = new FastaSequence(this, filename, currHeader.toString(), currentTextLine, position);
+                    currentFastaSequence = new FastaSequence(this, file.getName(), currHeader.toString(), currentTextLine, position);
 
                     currHeader = null;
                     fastaSequences.add(currentFastaSequence);

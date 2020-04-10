@@ -91,13 +91,12 @@ public ORF(int position, int charCounter, FastaSequence parent) {
 
     public String toFastaFormat() {
         StringBuilder fastaBuilder = new StringBuilder();
+
         fastaBuilder.append("> ORF:").append(getParentFastaSequence().getFilename()+":");
-        System.out.println(fastaBuilder.toString());
 
         fastaBuilder.append(counterStart+":"+counterEnd).append(":"+ (getLength() % 3) + "\n"); // pos and frame!
-        System.out.println(fastaBuilder.toString());
-
-        fastaBuilder.append(getParentFastaSequence().getORFFinder().getOrf(this)).append("\n");
+        String ORFDNASequnceString = getParentFastaSequence().getORFFinder().getOrf(this);
+        fastaBuilder.append(ORFDNASequnceString).append("\n");
 
         return fastaBuilder.toString();
     }

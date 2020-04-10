@@ -3,17 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="163cad63-154e-4643-9941-4070260d818e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Course7Informatica.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Course7Informatica.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Database/DatabaseManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Database/DatabaseManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/blast/ORFBlaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/blast/ORFBlaster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/FastaSequence.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORF.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORF.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orffinder/ORFFinder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/orfgui/ORFVisualiser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/orfgui/ORFVisualiser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/BlastTests/TestORFBlaster.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/BlastTests/TestORFBlaster.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/GUITests/TestORFVis.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/GUITests/TestORFVis.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/HelperTests/TestFastaConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/HelperTests/TestFastaConverter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ORFFinderTests/TestORFFinder.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -146,7 +139,8 @@
       <option name="presentableId" value="Default" />
       <updated>1586298334998</updated>
       <workItem from="1586298336206" duration="279000" />
-      <workItem from="1586479505812" duration="2460000" />
+      <workItem from="1586479505812" duration="2571000" />
+      <workItem from="1586511711811" duration="918000" />
     </task>
     <servers />
   </component>
