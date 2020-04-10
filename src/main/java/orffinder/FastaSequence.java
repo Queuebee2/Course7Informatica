@@ -1,27 +1,33 @@
 package orffinder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class FastaSequence implements Iterable<ORF> {
+public class FastaSequence implements Iterable<ORF>, Serializable {
 
 
-    final String header;
-    public String filename;
-    final int SequenceID;
+    public final String header;
+    private String fastaFilename;
+    public final int SequenceID;
     private static int IDIncrement = 0;
     final long lineNumber;
     final long offset;      // in file
     public long EndPos;
     public long RealSize;
+    private ORFFinder finder;
     private ArrayList<String[]> tablelist;
+
 
     private  ArrayList<ORF> ORFList = new ArrayList<ORF>();
     private  ArrayList<ORF>[] ORFTrackers =  new ArrayList[3];
+    public int completedOrfCount = ORFList.size();
 //final ArrayList<ArrayList<ORF>> ORFTrackers = new ArrayList < ArrayList < ORF >> (3); // if above doesnt work
 
-    public FastaSequence(String filename, String currHeader, int currentTextLine, int position) {
-        SequenceID = IDIncrement++;
+    public FastaSequence(ORFFinder finder, String filename, String currHeader, int currentTextLine, int position) {
+        this.SequenceID = IDIncrement++;
+        this.fastaFilename = filename;
+        this.finder = finder;
         header = currHeader;
         lineNumber = currentTextLine;
         offset = position; // in file
@@ -30,7 +36,18 @@ public class FastaSequence implements Iterable<ORF> {
         ORFTrackers[2]= new ArrayList<ORF>();
     }
 
-    public void addNewORF(long position, long charCounter, int modulo) {
+//    public FastaSequence(String mock) {
+//        if (mock.equals("mock)")) {
+//            header = "mocking header";
+//            lineNumber = 10;
+//            offset = 700;
+//            filename = "mockFilename";
+//        } else {
+//            throw new IllegalArgumentException("mock fastasequence failed");
+//        }
+//    }
+
+    public void addNewORF(int position, int charCounter, int modulo) {
         //ORFTrackers.get(modulo).add(new ORF(position, charCounter)); // for nested arraylist
 
         ORFTrackers[modulo].add(new ORF(position, charCounter, this));
@@ -55,10 +72,19 @@ public class FastaSequence implements Iterable<ORF> {
         return RealSize;
     }
 
+    public ORFFinder getORFFinder() {
+        return finder;
+    }
+
+    public String getFilename() {
+        return fastaFilename;
+    }
+
     @Override
     public Iterator<ORF> iterator() {
         return ORFList.iterator();
     }
+
     public ArrayList<String[]> makeTable_list(){
         tablelist = new ArrayList<String[]>();
         int orfIdMaker = 0;
@@ -73,12 +99,13 @@ public class FastaSequence implements Iterable<ORF> {
         }
         return tablelist;
     }
+
     public String getStatistics() {
         long totalOrfLength = 0;
         long averageOrfLength = 0;
         long shortestOrfLength= 0;
         long longestOrfLength= 0;
-        int completedOrfCount = 0;
+         completedOrfCount = 0;
         int incompleteOrfCount = 0;
 
         long size;
@@ -118,7 +145,7 @@ public class FastaSequence implements Iterable<ORF> {
             statistics.append(" StartCounter=").append(o.getCounterStart());
             statistics.append(" EndCounter=").append(o.counterEnd);
             statistics.append(" ID: ").append(o.getID());
-            statistics.append(" PARENT: ").append(o.parentFastaSequence);
+            statistics.append(" PARENT: ").append(o.getParentFastaSequence());
 
         }
 

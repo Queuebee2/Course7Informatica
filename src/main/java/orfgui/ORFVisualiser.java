@@ -33,8 +33,10 @@ public class ORFVisualiser extends JFrame {
     private ArrayList<FastaSequence> list;
     private ArrayList<Rectangle> reclist;
     private JTable table;
+    private HashMap<ORF,String> Selected_ORF_list;
     private ListSelectionModel listSelectionModel;
     private String Blasttype;
+    private DatabaseManager database;
 
     Color black= new Color(43, 43, 43);
     Color lighter_black= new Color(60, 63, 65);
@@ -42,7 +44,7 @@ public class ORFVisualiser extends JFrame {
     Color Blue= new Color( 30,200,255);
     Image img = Toolkit.getDefaultToolkit().getImage("src/main/resources/DNA-512.png");
 
-    public ORFVisualiser() {
+    public ORFVisualiser() throws SQLException {
 
 
         new SplashScreenDemo();
@@ -53,8 +55,7 @@ public class ORFVisualiser extends JFrame {
 
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws SQLException {
         ORFVisualiser swingMenuDemo = new ORFVisualiser();
 
 
@@ -68,7 +69,8 @@ public class ORFVisualiser extends JFrame {
             e.printStackTrace();
         }
     }
-    private void prepareGUI() {
+    private void prepareGUI() throws SQLException {
+        database = new DatabaseManager();
         setLookAndFeel();
         mainFrame = new JFrame("orfgui");
         mainFrame.setSize(1000, 1000);
@@ -350,7 +352,7 @@ public class ORFVisualiser extends JFrame {
         textofFile.read(input, "READING FILE :)");
     }
     private void MakeSelected_Table(ArrayList<String> indexlist){
-        HashMap Selected_ORF_list = new HashMap();
+        Selected_ORF_list = new HashMap<ORF,String>();
         DefaultTableModel tableModel = null;
         Border blackline = BorderFactory.createLineBorder(Blue);
         Font titel = new Font("arial",Font.BOLD,16);
@@ -391,7 +393,8 @@ public class ORFVisualiser extends JFrame {
         upload_button.setPreferredSize(new Dimension(140,20));
         upload_button.addActionListener(e -> {
             try {
-                DatabaseManager database = new DatabaseManager(Selected_ORF_list);
+                System.out.println("amount "+Selected_ORF_list.size());
+                database.insert(Selected_ORF_list);
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -490,7 +493,8 @@ public class ORFVisualiser extends JFrame {
                     Reader reader = new Reader();
                     File file = reader.FileChooser();
                     try {
-                        orfFinder = new ORFFinder(file);
+                        orfFinder = new ORFFinder();
+                        orfFinder.setFile(file);
                         orfFinder.findOrfs();
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -501,7 +505,7 @@ public class ORFVisualiser extends JFrame {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    list = orfFinder.getInfoForVisualisation();
+                    list = orfFinder.getFastaSequences();
                     MakeORFlist();
                     ORFtable();
                     //reclist = makeRec();
