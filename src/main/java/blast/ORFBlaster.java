@@ -1,7 +1,6 @@
 package blast;
 
 import orffinder.ORF;
-import orffinder.ORFFinder;
 import org.biojava.nbio.core.sequence.io.util.IOUtils;
 import org.biojava.nbio.ws.alignment.qblast.*;
 
@@ -43,28 +42,35 @@ public  class  ORFBlaster  {
 
     }
 
-    public void blastORFselection(List<ORF> orfs, ORFFinder finder) {
+    
+
+    public void blastORFselection(List<ORF> orfs, String algorithm, String database) {
 
 
-        for ( ORF orf  :  orfs) {
-
+        StringBuilder fastaString = new StringBuilder();
+        for ( ORF orf : orfs ) {
+            fastaString.append(orf.toFastaFormat());
         }
+
+        blast(fastaString.toString(), algorithm, database);
+
     }
 
     /**
      * less generic, hardcoded blast-db combo methods
      * got this from here https://github.com/swappyk/biojava/blob/master/biojava-ws/src/main/java/demo/NCBIQBlastServiceDemo.java
      */
-    public void blastn(String query) {
+    public void blast(String query, String algorithm, String database) {
 
-        queryProperties.setBlastProgram(BlastProgramEnum.blastn);
-        queryProperties.setBlastDatabase("nt");
+        queryProperties.setBlastProgram(BlastProgramEnum.valueOf(algorithm));   //todo een beetje kan hier fout gaan als niet altijd comobox
+        queryProperties.setBlastDatabase(database);                             //todo vanalles kan hier fout gaan bij verkeerde input
 
         outputProperties.setOutputFormat(BlastOutputFormatEnum.XML);
 
         String rid = null;
         FileWriter writer = null;
         BufferedReader reader = null;
+
         try {
             // send blast request and save request id
             rid = service.sendAlignmentRequest(query, queryProperties);
