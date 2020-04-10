@@ -1,9 +1,11 @@
 package orfgui;
 import Database.DatabaseManager;
+import blast.ORFBlaster;
 import helpers.Reader;
 import orffinder.FastaSequence;
 import orffinder.ORF;
 import orffinder.ORFFinder;
+import org.forester.archaeopteryx.tools.Blast;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -33,10 +35,11 @@ public class ORFVisualiser extends JFrame {
     private ArrayList<FastaSequence> list;
     private ArrayList<Rectangle> reclist;
     private JTable table;
-    private HashMap<ORF,String> Selected_ORF_list;
+    private HashMap<ORF,String> Selected_ORF_map;
     private ListSelectionModel listSelectionModel;
-    private String Blasttype;
+    private String Blasttype = "";
     private DatabaseManager database;
+    private ORFBlaster blaster;
 
     Color black= new Color(43, 43, 43);
     Color lighter_black= new Color(60, 63, 65);
@@ -48,6 +51,7 @@ public class ORFVisualiser extends JFrame {
 
 
         new SplashScreenDemo();
+        blaster = new ORFBlaster();
         prepareGUI();
         HolderImage();
         showFile();
@@ -352,7 +356,8 @@ public class ORFVisualiser extends JFrame {
         textofFile.read(input, "READING FILE :)");
     }
     private void MakeSelected_Table(ArrayList<String> indexlist){
-        Selected_ORF_list = new HashMap<ORF,String>();
+        Selected_ORF_map = new HashMap<ORF,String>();
+        ArrayList<ORF> Selected_ORF_list = new ArrayList<>();
         DefaultTableModel tableModel = null;
         Border blackline = BorderFactory.createLineBorder(Blue);
         Font titel = new Font("arial",Font.BOLD,16);
@@ -369,7 +374,8 @@ public class ORFVisualiser extends JFrame {
         for(String index : indexlist){
             ORF orf = ORFlist.get(Integer.parseInt(index));
             String sequence = orfFinder.getOrf(orf);
-            Selected_ORF_list.put(orf,sequence);
+            Selected_ORF_map.put(orf,sequence);
+            Selected_ORF_list.add(orf);
             String[] value = new String[3];
             value[0] = index;
             value[1] = sequence;
@@ -393,8 +399,8 @@ public class ORFVisualiser extends JFrame {
         upload_button.setPreferredSize(new Dimension(140,20));
         upload_button.addActionListener(e -> {
             try {
-                System.out.println("amount "+Selected_ORF_list.size());
-                database.insert(Selected_ORF_list);
+                System.out.println("amount "+Selected_ORF_map.size());
+                database.insert(Selected_ORF_map);
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -402,6 +408,20 @@ public class ORFVisualiser extends JFrame {
         });
         JButton blast_button = new JButton("BLAST");
         blast_button.setPreferredSize(new Dimension(140,20));
+        blast_button.addActionListener(e -> {
+            switch (Blasttype) {
+                case "blastn": blaster.blastORFselection(Selected_ORF_list, Blasttype, "nt");
+                break;
+                case "blastx":
+                case "blastp":
+                    blaster.blastORFselection(Selected_ORF_list,Blasttype,"nr");
+                    break;
+                case ""  : blaster.blastORFselection(Selected_ORF_list,"blastn", "nt");
+                break;
+
+
+            }
+        });
 
         selected_table.setBackground(lighter_black);
         selected_table.setForeground(Color.white);
@@ -412,7 +432,7 @@ public class ORFVisualiser extends JFrame {
         header.setBackground(Blue);
         header.setForeground(Color.white);
 
-        String[] BLAST_types = { "BLASTn", "tBLASTx","BLASTx" };
+        String[] BLAST_types = { "blastn", "blastp","blastx" };
         JComboBox<String> Blast_option_box = new JComboBox<>(BLAST_types);
         Blast_option_box.setPreferredSize(new Dimension(280,30));
         Blast_option_box.setBackground(DarkBlue);
