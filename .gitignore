@@ -6,3 +6,7 @@ target/*
 classes/
 
 .idea/
+
+*.iml
+
+blastOutput.xml
