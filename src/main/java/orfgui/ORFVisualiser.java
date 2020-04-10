@@ -1,11 +1,11 @@
 package orfgui;
+
 import Database.DatabaseManager;
 import blast.ORFBlaster;
 import helpers.Reader;
 import orffinder.FastaSequence;
 import orffinder.ORF;
 import orffinder.ORFFinder;
-import org.forester.archaeopteryx.tools.Blast;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -18,7 +18,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 public class ORFVisualiser extends JFrame {
     private JFrame mainFrame;
