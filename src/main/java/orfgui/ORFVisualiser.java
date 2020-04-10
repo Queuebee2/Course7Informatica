@@ -673,35 +673,47 @@ public class ORFVisualiser extends JFrame {
                     Reader reader = new Reader();
                     // open file chooser
                     File file = reader.FileChooser();
-                    try {
-                        // make ORFFinder
-                        orfFinder = new ORFFinder();
-                        orfFinder.setFile(file);
-                        orfFinder.findOrfs();
-                        // background for error popups
-                        UIManager.put("Panel.background",new ColorUIResource(black));
-                        // start connection to database
-                        database = new DatabaseManager();
-                    } catch (IOException | SQLException ex) {
-                        ex.printStackTrace();
+
+                    // background for possible error popups
+                    UIManager.put("Panel.background", new ColorUIResource(black));
+
+                    if (file != null) {
+                        try {
+                            // make ORFFinder
+                            orfFinder = new ORFFinder();
+                            orfFinder.setFile(file);
+                            orfFinder.findOrfs();
+                            // start connection to database
+                            database = new DatabaseManager();
+                        } catch (IOException | SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                        pathToFile.setText(String.valueOf(file));
+                        try {
+                            // make file content display
+                            FileDisplayer(file);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        //list with all FastaSequence objects
+                        list = orfFinder.getFastaSequences();
+                        //make the list of ORFs with their id as key
+                        MakeORFlist();
+                        //make the table with all orfs
+                        ORFtable();
+                        // update the controlPanel and remove the holder image
+                        controlPanel.repaint();
+                        controlPanel.remove(jLabelEmptyHolderImage);
+                        controlPanel.validate();
+                    } else {
+                        int optionType = JOptionPane.DEFAULT_OPTION;  // YES+NO+CANCEL
+                        int messageType = JOptionPane.PLAIN_MESSAGE;  // no standard icon
+
+                        ImageIcon icon = new ImageIcon("src/main/resources/idkwhy.gif", "blob");
+                        int res = JOptionPane.showConfirmDialog(null, "No file selected, try again!", "No file selected",
+                                optionType, messageType, icon);
                     }
-                    pathToFile.setText(String.valueOf(file));
-                    try {
-                        // make file content display
-                        FileDisplayer(file);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                    //list with all FastaSequence objects
-                    list = orfFinder.getFastaSequences();
-                    //make the list of ORFs with their id as key
-                    MakeORFlist();
-                    //make the table with all orfs
-                    ORFtable();
-                    // update the controlPanel and remove the holder image
-                    controlPanel.repaint();
-                    controlPanel.remove(jLabelEmptyHolderImage);
-                    controlPanel.validate();
+
                     break;
 
                     // not yet implemented
