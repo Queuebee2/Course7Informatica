@@ -1,11 +1,11 @@
 package orfgui;
-
 import Database.DatabaseManager;
 import blast.ORFBlaster;
 import helpers.Reader;
 import orffinder.FastaSequence;
 import orffinder.ORF;
 import orffinder.ORFFinder;
+import org.forester.archaeopteryx.tools.Blast;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -18,9 +18,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class ORFVisualiser extends JFrame {
     private JFrame mainFrame;
@@ -43,8 +41,9 @@ public class ORFVisualiser extends JFrame {
     private DatabaseManager database;
     private ORFBlaster blaster;
 
-    private Font titel = new Font("monospace",Font.BOLD,16);
-    private Font combotitel = new Font("monospace",Font.BOLD,13);
+    private Font titel = new Font(Font.MONOSPACED,Font.BOLD,16);
+    private Font combotitel = new Font(Font.MONOSPACED,Font.BOLD,13);
+    private Font text = new Font(Font.MONOSPACED,Font.PLAIN,12);
     private Color black= new Color(43, 43, 43);
     private Color lighter_black= new Color(60, 63, 65);
     private Color DarkBlue= new Color(47, 79, 79);
@@ -74,8 +73,8 @@ public class ORFVisualiser extends JFrame {
     private void setLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            UIManager.put("OptionPane.background",new ColorUIResource(lighter_black));
             UIManager.put("OptionPane.messageForeground",new ColorUIResource(Color.white));
+            UIManager.put("OptionPane.background",new ColorUIResource(lighter_black));
             UIManager.put("OptionPane.messageFont", titel);
             UIManager.put("OptionPane.buttonFont", combotitel);
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
@@ -108,7 +107,6 @@ public class ORFVisualiser extends JFrame {
 
     private void showFile() {
         // creation of file display with scrolling bar
-        Font text = new Font("arial",Font.PLAIN,12);
         textofFile = new JTextArea(200, 100);
         textofFile.setBackground(lighter_black);
         textofFile.setForeground(Color.white);
@@ -121,9 +119,7 @@ public class ORFVisualiser extends JFrame {
         pathToFile.setEditable(false);
         pathToFile.setFont(titel);
         pathToFile.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Blue));
-        //pathToFile.setBounds(5, 5, 970, 25);
         pathToFile.setPreferredSize(new Dimension(970,25));
-        //displayfile.setBounds(5, 30, 970, 200);
 
         textofFile.setPreferredSize(new Dimension(940,100));
 
@@ -215,6 +211,7 @@ public class ORFVisualiser extends JFrame {
                 header.setBackground(Blue);
                 header.setForeground(Color.white);
                 table.setBorder(blackline);
+                table.setFont(text);
                 table.setCellSelectionEnabled(true);
                 table.setModel(tableModel);
                 table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -449,6 +446,7 @@ public class ORFVisualiser extends JFrame {
         selected_table.setBackground(lighter_black);
         selected_table.setForeground(Color.white);
         selected_table.setBorder(blackline);
+        selected_table.setFont(text);
         JTableHeader header = selected_table.getTableHeader();
         header.setOpaque(false);
         header.setFont(titel);
@@ -523,7 +521,7 @@ public class ORFVisualiser extends JFrame {
                         orfFinder = new ORFFinder();
                         orfFinder.setFile(file);
                         orfFinder.findOrfs();
-                        UIManager.put("OptionPane.background",new ColorUIResource(lighter_black));
+                        UIManager.put("Panel.background",new ColorUIResource(black));
                         database = new DatabaseManager();
                     } catch (IOException | SQLException ex) {
                         ex.printStackTrace();
