@@ -38,7 +38,7 @@ public class TestORFBlaster {
             }
         }
         ORFBlaster blaster = new ORFBlaster();
-        blaster.blastORFselection();
+        blaster.blast(fasta.toString(), "blastn", "nt");
     }
 
     }
