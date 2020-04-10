@@ -12,7 +12,7 @@ public class TestORFFinder {
 
     public static void main(String[] args) {
         try {
-            File testfile = new File("src/test/resources/data/Glennie_the_platypus.fa");
+            File testfile = new File("D:\\GitHub\\Course7Informatica\\src\\test\\resources\\data\\Glennie the platypus.fa");
             ORFFinder orfFinder = new ORFFinder();
             orfFinder.setFile(testfile);
             orfFinder.findOrfs();//
@@ -20,19 +20,19 @@ public class TestORFFinder {
             orfFinder.getallOrfs();
             ArrayList<FastaSequence> bob = orfFinder.getFastaSequences();
 
+            StringBuilder fasta = new StringBuilder();
             for ( FastaSequence sequence  : bob   ) {
 
                 int count = 0;
                 for ( ORF orf : sequence ) {
-                    System.out.println(orf.toFastaFormat());
+                    fasta.append(orf.toFastaFormat());
                     count++;
                     if (count > 10) {
                         break;
                     }
                 }
-
-
             }
+            System.out.println(fasta.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
