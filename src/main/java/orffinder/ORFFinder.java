@@ -31,10 +31,15 @@ public class ORFFinder {
         ORFFinder orff = new ORFFinder();
         orff.printConstants();
     }
-    
+
     public ORFFinder()  {
     }
 
+    /**
+     * set the filename currently in use and create a RandomAccesFile with buffer to read
+     * @param file
+     * @throws IOException
+     */
     public void setFile(File file) throws IOException {
         this.file = file;
         mainRAFile = new RandomAccessFile(file, "r");
@@ -103,7 +108,6 @@ public class ORFFinder {
         int p_pointerPos = 0;
 
         while (position < lastValidDNACharacterPos) {
-            // if c = #13 and c + 1 <> #10 then raise FuckingLinuxException
 
             b_byteAtPointer = buffer.get(p_pointerPos);
 
@@ -145,9 +149,9 @@ public class ORFFinder {
                     continue; // do not increment position but continue
 
 
-                    // check orf start
+                    // check for orf start, if it starts,
                 case NucByteConstants.A:
-                    assert currentFastaSequence != null : "NO FUCKING DNA";
+                    assert currentFastaSequence != null : "NO DATA AT ALL";
 
                     // put byes 0,1,2 of buffer.getInt into currentCodon
                     // (read 4 bytes from here but only use first 3 )
@@ -168,20 +172,17 @@ public class ORFFinder {
 
                     break;
 
-                // check if orf ends
+                // check if orf ends, then send a signal to the current sequence to end all orfs in the current frame
                 case NucByteConstants.T:
-                    assert currentFastaSequence != null : "NO FUCKING DNA";
+                    assert currentFastaSequence != null : "NO DATA AT ALL ";
 
                     currentCodonLong = buffer.getInt(position) & NucByteConstants.MASK_3;
-
                     if (currentCodonLong == NucByteConstants.TAG || currentCodonLong == NucByteConstants.TAA || currentCodonLong == NucByteConstants.TGA) {
                         currentFastaSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
-
                     } else {
                         currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
                         if (currentCodonLong == NucByteConstants.TAG || currentCodonLong == NucByteConstants.TAA || currentCodonLong == NucByteConstants.TGA) {
                             currentFastaSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
-
                         }
                     }
 
@@ -221,7 +222,7 @@ public class ORFFinder {
     }
 
     /**
-     * Compresses a long (8 bytes)
+     * Compression methods to speed up parsing and ignore linefeeds
      * @param i the integer to compress
      * @param isUnix whether to account for unix line feeds
      * @return long compressed to 3 usable bytes
@@ -283,7 +284,9 @@ public class ORFFinder {
     }
 
 
-
+    /**
+     * mostly a test method, to see how long it takes to get all orf sequences and count orfs.
+     */
     public void getallOrfs() {
         long startTime = System.nanoTime();
 
@@ -332,6 +335,7 @@ public class ORFFinder {
         return "";
 
     }
+
 
     public ArrayList<FastaSequence> getSequences() {
         return getFastaSequences();

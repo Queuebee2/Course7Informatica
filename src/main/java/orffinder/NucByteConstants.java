@@ -18,9 +18,9 @@ public class NucByteConstants {
     public static final long TGA = (T) | (G << 8) | (A << 16);         //  00 00 00 00 01 00 00 01 01 00 01 11 01 01 01 00
     public static final long TAG = (T) | (A << 8) | (G << 16);         //  00 00 00 00 01 00 01 11 01 00 00 01 01 01 01 00
     public static final long ATG = (A) | (T << 8) | (G << 16);         //  00 00 00 00 01 00 01 11 01 01 01 00 01 00 00 01
-    public static final byte N = 78;                           //  01 00 11 10
-    public static final int  MASK_3 = 0x00FFFFFF;
-    public static final long MASK_5 = 0xFFFFFFFFFFL;
+    public static final byte N = 78;                                   //  01 00 11 10
+    public static final int  MASK_3 = 0x00FFFFFF;                      //  00 00 00 00 11 11 11 11 11 11 11 11 11 11 11 11
+    public static final long MASK_5 = 0xFFFFFFFFFFL;                   //  11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11 11
 
 
 }

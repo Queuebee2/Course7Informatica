@@ -1,4 +1,9 @@
 package orffinder;
+
+/**
+ * Maskfactory has some static helper methods for ORFFinder compression methods to extract
+ * certain bytes from  a long
+ */
 public class MaskFactory
 {
     public static byte GetByte_0(long u)
