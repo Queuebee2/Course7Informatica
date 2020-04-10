@@ -2,35 +2,18 @@ package orffinder;
 
 public class ORF {
 
-    private long offset;         // offset in file
-    public long endpos;         // endpos in file
-    private long counterStart;   // relative counter to dna
-    public long counterEnd;     // relative counter to dna without the fucking linefeeds
-
-    // currently testing
+    private long offset;            // offset in file (absolute)
+    public long endpos;             // endpos in file (absolute)
+    private long counterStart;      // relative counter to dna
+    public long counterEnd;         // relative counter to dna without the fucking linefeeds
     private FastaSequence parentFastaSequence;
     private int ID;
-    static int orfsmade = 0;
+    static int orfsmade = 0;        // tracker of how many orfs have been made in total and to use as ID
 
-//    public ORF(String mockery) {
-//        if (mockery.equals("mock")) {
-//            offset = 10;
-//            endpos = 23;
-//            counterStart = 100;
-//            counterEnd = 113;
-//            parentFastaSequence = new FastaSequence("mock");
-//        } else {
-//            throw new IllegalArgumentException("mock ORF failed");
-//        }
-//
-//    }
 
 public ORF(int position, int charCounter, FastaSequence parent) {
-
     offset = position;
     counterStart = charCounter;
-
-    // currently testing (speed)
     parentFastaSequence = parent;
     ID = orfsmade++;
 }
@@ -43,10 +26,9 @@ public ORF(int position, int charCounter, FastaSequence parent) {
         return (int) (counterEnd-counterStart);
     }
 
-
     /**
      *
-     * @return int: absolute byte-offset in ansii fasta file
+     * @return int: absolute position of the start of this orf in the fasta file assuming it is ansii encoded
      */
     public int getOffset() {
         return (int) offset;
@@ -75,7 +57,7 @@ public ORF(int position, int charCounter, FastaSequence parent) {
 
     /**
      *
-     * @return int: absolute byte-end in ansii fasta file
+     * @return int: absolute position of the end of this orf in the fasta file assuming it is ansii encoded
      */
     public int getEndpos() {
         return (int) endpos;
@@ -89,6 +71,20 @@ public ORF(int position, int charCounter, FastaSequence parent) {
         return parentFastaSequence;
     }
 
+    /**
+     * finds the corresponding ORF sequence in the linked fasta file and creates a (no newline) fasta formatted
+     * fasta entry with
+     *  - filename
+     *  - startposition (relative to sequence)
+     *  - endposition (relative also)
+     *  - the frame relative to the start of the sequence
+     *
+     * @example:
+     *      > ORF:filename.fa:100:262:1
+     *      ATGACATCGATCGATCGATGATACTAGCTAGCTAGCATGCATCGATGCATAGACTAGCATGTCATAGAG....
+     *
+     * @return fastaString
+     */
     public String toFastaFormat() {
         StringBuilder fastaBuilder = new StringBuilder();
 

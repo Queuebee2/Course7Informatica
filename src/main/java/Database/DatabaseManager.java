@@ -4,28 +4,41 @@ package Database;
 import orffinder.FastaSequence;
 import orffinder.ORF;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
 /**
- *
- * Todo : everything
- * plan for now : implement Java DB? (??) -- embedded derby (only needs JDK, no server)
- *      stuff needed for plan:
- *          - A DB setup script
- *          - methods to query db
+ DatabaseManager manages the connection to the database as well as inserts, downloads and updates
  */
 public class DatabaseManager {
+    // connection to SQL database
     private Connection connection;
-    private HashMap<ORF,String> Selected_ORFs;
 
+    /**
+     * Constructor of Database manager makes the connection, if no internet gives a pop up
+     * @throws SQLException Something went wrong with the server
+     */
     public DatabaseManager() throws SQLException {
-        makeConnection();
+        try {
+            makeConnection();
+        } catch (SQLException e) {
+            int optionType = JOptionPane.DEFAULT_OPTION;
+            int messageType = JOptionPane.PLAIN_MESSAGE;
+            ImageIcon icon = new ImageIcon("src/main/resources/eror.gif", "blob");
+            int res = JOptionPane.showConfirmDialog(null, "Could'nt connect to database \nPlease check your internet connection", "No internet connection",
+                    optionType, messageType, icon);
+            e.printStackTrace();
+        }
     }
 
-    public void makeConnection() throws SQLException {
+    /**
+     * Makes a connection to the database
+     * @throws SQLException something went wrong while making the connection
+     */
+    private void makeConnection() throws SQLException {
         connection = null;
 
         // Initialize connection object
@@ -57,39 +70,26 @@ public class DatabaseManager {
         }
     }
 
-
     /**
-     * TODO translate to java
-     *  make hashmap
-     *  for orf in selectedOrfs.keys():
-     *      if orf.parent in hashmap.keys():
-     *         arraylist = hashmap.get(parent)
-     *         arraylist.add(orf)
-     *      else
-     *         make new arralist
-     *         arraylist.add(orf)
-     *         hashmap.put(orf.parent, arraylist)
-     */
-
-    /**
-     *
-     * @param selected_ORF_list
-     * @throws SQLException
+     * Inserts the data provided into the MY SQL database
+     * @param selected_ORF_list map with the selected orfs as key and their sequence as value
+     * @throws SQLException something went wrong during the insert
      */
     public void insert(HashMap<ORF,String> selected_ORF_list) throws SQLException {
-
-        Selected_ORFs = selected_ORF_list;
+        // arraylist with the sequece objects
         ArrayList<FastaSequence> seqlist = new ArrayList<>();
+        // amount of rows inserted
         int nRowsInserted = 0;
-        System.out.println("amount of orfs selected: " + Selected_ORFs.size());
 
-      for(ORF orf : Selected_ORFs.keySet()){
-          FastaSequence seq = orf.getParentFastaSequence();           //todo ? problem: if multiple sequences, what do we do?
+        // go through all orfs and get their parent sequence
+      for(ORF orf : selected_ORF_list.keySet()){
+          FastaSequence seq = orf.getParentFastaSequence();
+          // if sequence object not yet in seqlist add it to seqlist
           if (!seqlist.contains(seq)){
                 seqlist.add(seq);                                                 // todo: sort selected orfs into buckets of Sequence:<orflist>
           }
           }
-
+        // insert all sequences in seqlist
       for (FastaSequence seq : seqlist){
           String Sequencetable_header = seq.header;
           String Sequencetable_filename = seq.getFilename();
@@ -104,26 +104,28 @@ public class DatabaseManager {
           preparedStatement.setString(2, Sequencetable_filename); // TODO: 9-4-2020 file gives null ?? heb het even veranderd om verdere foutmeldingen te vinden
           preparedStatement.setInt(3, Sequencetable_orfs_found);
           preparedStatement.setInt(4, Sequencetable_length);
+          //add to total of rows inserted
           nRowsInserted += preparedStatement.executeUpdate();
       }
-        for(ORF orf : Selected_ORFs.keySet()){
-            // all id are auto increment
-            String ORFtable_ORF_sequence = Selected_ORFs.get(orf);
+      // insert all orfs into the database with the right parent sequence id
+        for(ORF orf : selected_ORF_list.keySet()){
+
+            String ORFtable_ORF_sequence = selected_ORF_list.get(orf);
             int ORFtable_start = orf.getStartPosInSequence();
             int ORFtable_stop = (int) orf.counterEnd;
-
-
+            // get the latest inserted id in sequence table
             int last_id = Integer.parseInt(getlatestid()); // TODO: 9-4-2020 make this work     // TODO TRY getLatestIdByHeader (new method, pass seq or header&filename)
 
             PreparedStatement preparedStatement2 = connection.prepareStatement(
                     "INSERT INTO ORF " +
                             "(Sequence_id, start_position, stop_position, ORF_Sequence ) " +
                     "VALUES (?, ?, ?, ?);");
-
+            // prepare teh statement
             preparedStatement2.setInt(1, last_id);
             preparedStatement2.setInt(2, ORFtable_start);
             preparedStatement2.setInt(3, ORFtable_stop);
             preparedStatement2.setString(4, ORFtable_ORF_sequence);
+            //execute the update
             nRowsInserted += preparedStatement2.executeUpdate();
 
 
@@ -131,46 +133,13 @@ public class DatabaseManager {
 
         System.out.println(String.format("Inserted %d row(s) of data.", nRowsInserted));
     }
-    public void download() throws SQLException {
-        try {
 
-            Statement statement = connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT * from test;");
-            while (results.next()) {
-                String outputString =
-                        String.format(
-                                "Data row = (%s, %s)",
-                                results.getString(1),
-                                results.getString(2));
-
-                System.out.println(outputString);
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Encountered an error when executing given sql statement", e);
-        }
-        System.out.println("Execution finished.");
-    }
-    public void update() throws SQLException {
-        try
-        {
-            // Modify some data in table.
-            int nRowsUpdated = 0;
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE test SET quantity = ? WHERE name = ?;");
-            preparedStatement.setInt(1, 200);
-            preparedStatement.setString(2, "banana");
-            nRowsUpdated += preparedStatement.executeUpdate();
-            System.out.println(String.format("Updated %d row(s) of data.", nRowsUpdated));      // todo 12 ORFS -> 16 rows???  4 -> 8
-
-            // NOTE No need to commit all changes to database, as auto-commit is enabled by default.
-        }
-        catch (SQLException e)
-        {
-            throw new SQLException("Encountered an error when executing given sql statement.", e);
-        }
-        System.out.println("Execution finished.");
-    }
-
-    public String getlatestid() throws SQLException {
+    /**
+     * Gets the latest ID inserted into the Sequence table
+     * @return the latest ID
+     * @throws SQLException problem with getting information from database
+     */
+    private String getlatestid() throws SQLException {
         String outputString = "";
         try {
             Statement statement = connection.createStatement();
@@ -192,14 +161,14 @@ public class DatabaseManager {
 
     /**
      * get the latest ID of a sequence from database based on header and filename
-     * @param sequence
-     * @return
+     * @param sequence Fasta Sequence object
+     * @return String with the latest ID
      */
     public String getLatestIdByHeader(FastaSequence sequence) throws SQLException {
         return getLatestIdByHeader(sequence.header, sequence.getFilename());
     }
 
-    public String getLatestIdByHeader(String sequenceHeader, String sequenceFilename) throws SQLException {
+    private String getLatestIdByHeader(String sequenceHeader, String sequenceFilename) throws SQLException {
         String outputString = "";
         try {
             Statement statement = connection.createStatement();

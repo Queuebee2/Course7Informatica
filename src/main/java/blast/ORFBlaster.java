@@ -1,10 +1,10 @@
 package blast;
 
 import orffinder.ORF;
-import orffinder.ORFFinder;
 import org.biojava.nbio.core.sequence.io.util.IOUtils;
 import org.biojava.nbio.ws.alignment.qblast.*;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.List;
 
@@ -43,28 +43,34 @@ public  class  ORFBlaster  {
 
     }
 
-    public void blastORFselection(List<ORF> orfs, ORFFinder finder) {
+    
+
+    public void blastORFselection(List<ORF> orfs, String algorithm, String database) {
 
 
-        for ( ORF orf  :  orfs) {
-
+        StringBuilder fastaString = new StringBuilder();
+        for ( ORF orf : orfs ) {
+            fastaString.append(orf.toFastaFormat());
         }
+
+        blast(fastaString.toString(), algorithm, database);
+
     }
 
     /**
-     * less generic, hardcoded blast-db combo methods
-     * got this from here https://github.com/swappyk/biojava/blob/master/biojava-ws/src/main/java/demo/NCBIQBlastServiceDemo.java
+     * method to blast
      */
-    public void blastn(String query) {
+    public void blast(String query, String algorithm, String database) {
 
-        queryProperties.setBlastProgram(BlastProgramEnum.blastn);
-        queryProperties.setBlastDatabase("nt");
+        queryProperties.setBlastProgram(BlastProgramEnum.valueOf(algorithm));   //todo een beetje kan hier fout gaan als niet altijd comobox
+        queryProperties.setBlastDatabase(database);                             //todo vanalles kan hier fout gaan bij verkeerde input
 
         outputProperties.setOutputFormat(BlastOutputFormatEnum.XML);
 
         String rid = null;
         FileWriter writer = null;
         BufferedReader reader = null;
+
         try {
             // send blast request and save request id
             rid = service.sendAlignmentRequest(query, queryProperties);
@@ -87,6 +93,12 @@ public  class  ORFBlaster  {
                 writer.write(line + System.getProperty("line.separator"));
             }
         } catch (Exception e) {
+            // this is a java.lang.Exception. It hasn't been declared by biojava. mostly occurs with unable to retrieve rid;
+            int optionType = JOptionPane.DEFAULT_OPTION; // YES+NO+CANCEL
+            int messageType = JOptionPane.PLAIN_MESSAGE; // no standard icon
+            ImageIcon icon = new ImageIcon("src/main/resources/idkwhy.gif", "blob");
+            int res = JOptionPane.showConfirmDialog(null, "Couldn't connect to BLAST \nWe're not told why exactly\nError Message : '"+e.getMessage()+"'", "No connection possible",
+                    optionType, messageType, icon);
             System.out.println(e.getMessage());
             e.printStackTrace();
         } finally {

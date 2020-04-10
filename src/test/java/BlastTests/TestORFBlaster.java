@@ -4,49 +4,42 @@ import blast.ORFBlaster;
 import orffinder.FastaSequence;
 import orffinder.ORF;
 import orffinder.ORFFinder;
-import org.jmock.Mockery;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class TestORFBlaster {
 
-    private static final Mockery context = new Mockery();
-
-    // TODO FIX ILLEGALARGUMENTEXCEPTION :(
     public static void main(String[] args) {
-        // set up
-        final ORFFinder finder = context.mock(ORFFinder.class);
-        //context.setDefaultResultForType(ORFFinder.class, "AAAAAAAAATTACHGGG");
 
-        final ORFBlaster orfBlaster = new ORFBlaster();
-        FastaSequence sequence = new FastaSequence(finder, "test filename", "test header", 0, 0);
-        ORF orf = new ORF(14, 0, sequence);
+        File testfile = new File("src/test/resources/data/Glennie_the_platypus.fa");
+        ORFFinder orfFinder = new ORFFinder();
+        try {
+            orfFinder.setFile(testfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        orfFinder.findOrfs();//
+        orfFinder.printStats();
+        orfFinder.getallOrfs();
+        ArrayList<FastaSequence> bob = orfFinder.getFastaSequences();
 
-        // expectations
-//        context.checking(new Expectations() {{
-//            oneOf (ORFFinder.class).getOrf(ORF.class); will(returnValue("ATACGAGGCAGTACT"));}
-//
-//        });
-        // String fastaString = orf.toFastaFormat();
-        //orfBlaster.blastn(fastaString);
+        StringBuilder fasta = new StringBuilder();
+        for ( FastaSequence sequence  : bob   ) {
 
-
+            int count = 0;
+            for ( ORF orf : sequence ) {
+                fasta.append(orf.toFastaFormat());
+                count++;
+                if (count > 10) {
+                    break;
+                }
+            }
+        }
+        ORFBlaster blaster = new ORFBlaster();
+        blaster.blast(fasta.toString(), "blastn", "nt");
     }
-//    private static final String SEQUENCE = "ATTATAAACGACATAATCGATCGATGCATGTAATATATATAGCTAGCTAGCAGATGCTAGTCGACGATGATGA";
-//
-//    public static void main(String[] args) {
-//
-//        Mockery mocky = new Mockery();
-//        mocky.checking(new ExpectationBuilder() {
-//            @Override
-//            public void buildExpectations(Action action, ExpectationCollector expectationCollector) {
-//
-//            }
-//        });
-//        ORFBlaster orfBlaster = new ORFBlaster();
-//        ORFFinder finder = new ORFFinder(mocky);
-//        FastaSequence = new FastaSequence()
-//        ORF = new ORF();
-//        orfBlaster.blastn(SEQUENCE);
-//        }
 
     }
 

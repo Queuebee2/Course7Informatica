@@ -1,8 +1,12 @@
-package GUITests;
+package main;
+
 
 import orfgui.ORFVisualiser;
 
-public class TestORFVis {
+/**
+ * entry point of ORFF, used for building artifacts
+ */
+public class ORFFFApp {
 
     public static void main(String[] args) {
         new ORFVisualiser();
