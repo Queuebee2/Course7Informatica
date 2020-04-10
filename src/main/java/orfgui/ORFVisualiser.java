@@ -8,8 +8,6 @@ import orffinder.ORFFinder;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -17,7 +15,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * ORFVisualiser makes the GUI and functions as connection point between classes.
@@ -612,43 +612,6 @@ public class ORFVisualiser extends JFrame {
         //update the mainFrame
         mainFrame.validate();
         mainFrame.repaint();
-    }
-
-    /**
-     * SharedListSelectionHandler handles the selection in the ORF table
-     */
-    class SharedListSelectionHandler implements ListSelectionListener {
-        /**
-         * valueChanged makes an indexlist of all de IDs of the selected rows when the user stops changing the selection
-         * @param e action
-         */
-        public void valueChanged(ListSelectionEvent e) {
-            ArrayList<String> indexlist = new ArrayList<>();
-            ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-
-            // boolean to check if the user is done with changing the selection
-            boolean isAdjusting = e.getValueIsAdjusting();
-            if (lsm.isSelectionEmpty()) {
-            } else {
-                // if no more changes are made to the selection get the index of the row selected
-                if (!isAdjusting) {
-                    int minIndex = lsm.getMinSelectionIndex();
-                    int maxIndex = lsm.getMaxSelectionIndex();
-                    // for all selected rows get the ID out of column 4 and put it in the index list
-                    for (int i = minIndex; i <= maxIndex; i++) {
-                        if (lsm.isSelectedIndex(i)) {
-                            String index = (String) table.getValueAt(i, 4);
-                            System.out.println(index);
-                            indexlist.add(index);
-
-                        }
-                    }
-                    // make the sidePanel
-                    MakeSidePanel(indexlist);
-                }
-
-            }
-        }
     }
 
     /**
