@@ -1,6 +1,7 @@
 package blast;
 
 import orffinder.ORF;
+import orffinder.ORFFinder;
 import org.biojava.nbio.core.sequence.io.util.IOUtils;
 import org.biojava.nbio.ws.alignment.qblast.*;
 
@@ -42,11 +43,12 @@ public  class  ORFBlaster  {
 
     }
 
-    public void blastORFselection(List<ORF> orfs) {
+    public void blastORFselection(List<ORF> orfs, ORFFinder finder) {
 
-//
-//        props.setBlastProgram(BlastProgramEnum.blastp);
-//        blastService.
+
+        for ( ORF orf  :  orfs) {
+
+        }
     }
 
     /**

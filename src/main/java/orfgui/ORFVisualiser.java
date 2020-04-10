@@ -504,7 +504,7 @@ public class ORFVisualiser extends JFrame {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    list = orfFinder.getInfoForVisualisation();
+                    list = orfFinder.getFastaSequences();
                     MakeORFlist();
                     ORFtable();
                     //reclist = makeRec();

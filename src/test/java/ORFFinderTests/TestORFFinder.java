@@ -17,13 +17,12 @@ public class TestORFFinder {
             orfFinder.findOrfs();//
             orfFinder.printStats();
             orfFinder.getallOrfs();
-            ArrayList<FastaSequence> bob = orfFinder.getInfoForVisualisation();
-
+            ArrayList<FastaSequence> bob = orfFinder.getFastaSequences();
 
             for ( FastaSequence sequence  : bob   ) {
                 int count = 0;
                 for ( ORF orf : sequence ) {
-                    System.out.println(orfFinder.getOrf(orf));
+                    System.out.println(orf.toFastaFormat());
                     count++;
                     if (count > 10) {
                         break;
