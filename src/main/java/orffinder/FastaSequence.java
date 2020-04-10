@@ -4,28 +4,31 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * FastaSequence (named this way because of possible collision with the biojava Sequence object)
+ * holds information about the position, size, header and filename of sequences in a fasta file.
+ * When orfs are found it also keeps a list of ORF objects that can be turned into fasta
+ */
 public class FastaSequence implements Iterable<ORF>, Serializable {
 
 
     public final String header;
     private String fastaFilename;
-    public final int SequenceID;
-    private static int IDIncrement = 0;
+    private int SequenceID;
+    private static int totalSequencesMade = 0;
     final long lineNumber;
     final long offset;      // in file
-    public long EndPos;
+    long EndPos;
     public long RealSize;
     private ORFFinder finder;
-    private ArrayList<String[]> tablelist;
-
 
     private  ArrayList<ORF> ORFList = new ArrayList<ORF>();
     private  ArrayList<ORF>[] ORFTrackers =  new ArrayList[3];
     public int completedOrfCount = ORFList.size();
-//final ArrayList<ArrayList<ORF>> ORFTrackers = new ArrayList < ArrayList < ORF >> (3); // if above doesnt work
+
 
     public FastaSequence(ORFFinder finder, String filename, String currHeader, int currentTextLine, int position) {
-        this.SequenceID = IDIncrement++;
+        this.SequenceID = totalSequencesMade++;
         this.fastaFilename = filename;
         this.finder = finder;
         header = currHeader;
@@ -36,38 +39,39 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
         ORFTrackers[2]= new ArrayList<ORF>();
     }
 
-//    public FastaSequence(String mock) {
-//        if (mock.equals("mock)")) {
-//            header = "mocking header";
-//            lineNumber = 10;
-//            offset = 700;
-//            filename = "mockFilename";
-//        } else {
-//            throw new IllegalArgumentException("mock fastasequence failed");
-//        }
-//    }
-
-    public void addNewORF(int position, int charCounter, int modulo) {
-        //ORFTrackers.get(modulo).add(new ORF(position, charCounter)); // for nested arraylist
-
-        ORFTrackers[modulo].add(new ORF(position, charCounter, this));
+    /**
+     * start orf because a start codon has been encountered
+     * @param position      current absolute position in file from reader on which the orf starts
+     * @param charCounter   character counter, counting from start of sequence
+     * @param frame
+     */
+    public void addNewORF(int position, int charCounter, int frame) {
+        ORFTrackers[frame].add(new ORF(position, charCounter, this));
     }
 
-    public void updateORFs(long endPos, long charCounter, int modulo) {
-        //ArrayList<ORF> tracker = ORFTrackers.get(modulo); // for nested arraylist
-        assert (modulo >= 0 && modulo <= 2) : "MODULO CANT BE < 0 or > 2";
-        ArrayList<ORF> tracker = ORFTrackers[modulo];
+    /**
+     * TODO : add customizable minimum length
+     * end all the orfs in the current frame, because a stop codon has been encountered
+     * @param endPos        current absolute position in  file from reader on which the orf ends (-1)
+     * @param charCounter   character counter, counting fromstart of sequence
+     * @param frame         current frame
+     */
+    public void updateORFs(long endPos, long charCounter, int frame) {
+        assert (frame >= 0 && frame <= 2) : "frame CANT BE < 0 or > 2";        // asserts are off in compiled product
+        ArrayList<ORF> tracker = ORFTrackers[frame];        // get the list corresponding to the frame
         if (tracker.size() > 0) {
             for ( ORF orf : tracker ) {
-                orf.endpos = endPos;
+                orf.endpos = endPos + 1;                    // account for last character
                 orf.counterEnd = charCounter;
-
             }
             ORFList.addAll(tracker);
             tracker.clear();
         }
     }
 
+    /**
+     * @return The size of the sequence, by length in nucleotides
+     */
     public long getRealSize() {
         return RealSize;
     }
@@ -80,13 +84,18 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
         return fastaFilename;
     }
 
+
+    /**
+     *
+     * @return the ORFs in this sequence in an object to be iterated over.
+     */
     @Override
     public Iterator<ORF> iterator() {
         return ORFList.iterator();
     }
 
     public ArrayList<String[]> makeTable_list(){
-        tablelist = new ArrayList<String[]>();
+        ArrayList<String[]> tablelist = new ArrayList<String[]>();
         int orfIdMaker = 0;
         for(ORF orf:ORFList){
             String[] orfvalue = new String[5];
@@ -100,6 +109,11 @@ public class FastaSequence implements Iterable<ORF>, Serializable {
         return tablelist;
     }
 
+    /**
+     * Print sequence statistics including statistics for first 10 ORFs
+     * mostly for debug purposes but can be used for statistics if expanded.
+     * @return
+     */
     public String getStatistics() {
         long totalOrfLength = 0;
         long averageOrfLength = 0;

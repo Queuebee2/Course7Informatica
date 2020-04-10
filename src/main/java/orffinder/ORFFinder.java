@@ -1,8 +1,6 @@
 package orffinder;
 
 
-import helpers.MaskFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -16,27 +14,11 @@ import java.util.ArrayList;
 // add -ea for enable assertions in VM options
 
 /**
- * ORFFinder reads through a textfile (assumed format: nucleotide FASTA) to find ORFS
+ * ORFFinder reads through a textfile (assumed format: nucleotide FASTA, ansi coded) to find ORFs
+ * Open Reading Frame objects are made on each startcodon (ATG) within a FastaSequence object
+ * FastaSequences are kept track of in a local field.
  */
 public class ORFFinder {
-
-    // constants
-    private static final byte HEADER = 62;    //  00 11 11 10  // Header prefix >
-    private static final byte CR = 13;        //  00 00 11 01  // Carriage Return
-    private static final byte LF = 10;        //  00 00 10 10  // Line Feed
-    private static final byte A = 65;         //  01 00 00 01
-    private static final byte T = 84;         //  01 01 01 00
-    private static final byte C = 67;         //  01 00 00 11
-    private static final byte G = 71;         //  01 00 01 11
-    private static final byte N = 78;         //  01 00 11 10
-    private static final long ATG = (A) | (T << 8) | (G << 16);       // 00 00 00 00 01 00 01 11 01 01 01 00 01 00 00 01
-    private static final long TAG = (T) | (A << 8) | (G << 16);       // 00 00 00 00 01 00 01 11 01 00 00 01 01 01 01 00
-    private static final long TAA = (T) | (A << 8) | (A << 16);       // 00 00 00 00 01 00 00 01 01 00 00 01 01 01 01 00
-    private static final long TGA = (T) | (G << 8) | (A << 16);       // 00 00 00 00 01 00 00 01 01 00 01 11 01 01 01 00
-    private static final long CRLF_CHECK_1 = (CR << 8) | (LF << 16); // 00 00 00 00 00 00 10 10 00 00 11 01 00 00 00 00  // x + #13 + #10
-    private static final long CRLF_CHECK_2 = (CR << 16);             // 00 00 00 00 00 00 11 01 00 00 00 00 00 00 00 00  // x + y + #13
-    private static final int MASK_3 = 0x00FFFFFF;
-    private static final long MASK_5 = 0xFFFFFFFFFFL;
 
     static String filename_RELATIVE_TEMP = "src/test/resources/data/Glennie the platypus.fa";
     private final ArrayList<FastaSequence> fastaSequences = new ArrayList<FastaSequence>(100);
@@ -46,31 +28,30 @@ public class ORFFinder {
     private MappedByteBuffer mainBuffer;
 
     public static void main(String[] args) {
-
+        ORFFinder orff = new ORFFinder();
+        orff.printConstants();
     }
-
+    
     public ORFFinder()  {
-                        // SHOOT ME IN THE FOOT (took ~xxxhours to figure out)
-
     }
 
     public void setFile(File file) throws IOException {
         this.file = file;
         mainRAFile = new RandomAccessFile(file, "r");
         mainFileChannel = mainRAFile.getChannel();
-        //  mainBuffer = new RandomAccessFile(file, "r").getChannel().map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size()); // as oneliner
         mainBuffer = mainFileChannel.map(FileChannel.MapMode.READ_ONLY, 0, mainFileChannel.size());
-        mainBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        mainBuffer.order(ByteOrder.LITTLE_ENDIAN);      // the byte order has to be this way for the masks to work
     }
 
 
     /**
      * Algorithm by Eric Langedijk
+     * Finds orfs in an ansi coded fasta file in a rapid fashion. There's no abundance of errorchecking, so data musn't
+     * be invalid. orfs will still be predicted even in invalid data.
      * ASCII TABLE (for reference)
      * using ordinal values as keys maybe? later?: ATG 658471, TAG 846571, TAA 846565, TGA 847165 (changed use of hashmaps to arraylist for now)
      * chars of interest and their ASCII values: (65, A) (84, T) (67, C) (71, G) (62, >)
      */
-
     public void findOrfs() {
 
         // TIME LOGGING
@@ -84,30 +65,26 @@ public class ORFFinder {
         int charCounter;
         int currentTextLine;
 
-        // initialise some
+        // initialise some variables
         FastaSequence currentFastaSequence = null;
         position = 0;
         charCounter = 0;
         currentTextLine = 0;
-        int delta;
-
-        //debug stuff
-        int orfsCounted = 0;
-
 
         MappedByteBuffer buffer =  mainBuffer;
 
         final long lastValidDNACharacterPos = buffer.capacity() - 8;
 
+        int delta;  // the amount of characters a codon can be in (5 in windows, 4 in unix, mac not included)
         boolean UNIXLinefeeds = true;
         // check which type of linefeed the file contains, if it contains CR assume all are CRLF
         while (position < lastValidDNACharacterPos) {
             b_byteAtPointer = buffer.get();
-            if (b_byteAtPointer == CR) {
+            if (b_byteAtPointer == NucByteConstants.CR) {
                 System.out.println("Encountered {CR} character, assuming all lines end with CRLF! - WINDOWS FILE");
                 UNIXLinefeeds = false;
             }
-            if (b_byteAtPointer == LF) {
+            if (b_byteAtPointer == NucByteConstants.LF) {
                 break;
             }
             position++;
@@ -133,13 +110,13 @@ public class ORFFinder {
             switch (b_byteAtPointer) {
                 // end of line
 
-                case LF:
+                case NucByteConstants.LF:
                     currentTextLine++;
 
                     break;
 
                 // header line start (>) marks start of new sequence object
-                case HEADER: // >
+                case NucByteConstants.HEADER: // >
                     // if sequence object was made, end it here at the start of a new header
                     if (currentFastaSequence != null) {
                         currentFastaSequence.EndPos = position;          // TODO: 6-4-2020 make private? use setter?
@@ -149,9 +126,9 @@ public class ORFFinder {
                     // build the string of the new header (thanks java for not being nice with string concat)
                     currHeader = new StringBuilder();
                     buffer.position(p_pointerPos);
-                    while (position <= lastValidDNACharacterPos && b_byteAtPointer != LF) {
+                    while (position <= lastValidDNACharacterPos && b_byteAtPointer != NucByteConstants.LF) {
                         b_byteAtPointer = buffer.get();
-                        if (b_byteAtPointer != CR) {
+                        if (b_byteAtPointer != NucByteConstants.CR) {
                             currHeader.append((char) b_byteAtPointer);
                         }
                         p_pointerPos++;
@@ -169,22 +146,22 @@ public class ORFFinder {
 
 
                     // check orf start
-                case A:
+                case NucByteConstants.A:
                     assert currentFastaSequence != null : "NO FUCKING DNA";
 
                     // put byes 0,1,2 of buffer.getInt into currentCodon
                     // (read 4 bytes from here but only use first 3 )
-                    currentCodonLong = buffer.getInt(p_pointerPos) & MASK_3;
+                    currentCodonLong = buffer.getInt(p_pointerPos) & NucByteConstants.MASK_3;
 
 
-                    if (currentCodonLong == ATG) {
+                    if (currentCodonLong == NucByteConstants.ATG) {
                         currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
 
                     } else {
                         // if 0,1,3 bytes wasn't enough, check 5 bytes briefly too
                         currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
 
-                        if (currentCodonLong == ATG) {
+                        if (currentCodonLong == NucByteConstants.ATG) {
                             currentFastaSequence.addNewORF(position, charCounter, charCounter % 3);
                         }
                     }
@@ -192,17 +169,17 @@ public class ORFFinder {
                     break;
 
                 // check if orf ends
-                case T:
+                case NucByteConstants.T:
                     assert currentFastaSequence != null : "NO FUCKING DNA";
 
-                    currentCodonLong = buffer.getInt(position) & MASK_3;
+                    currentCodonLong = buffer.getInt(position) & NucByteConstants.MASK_3;
 
-                    if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
+                    if (currentCodonLong == NucByteConstants.TAG || currentCodonLong == NucByteConstants.TAA || currentCodonLong == NucByteConstants.TGA) {
                         currentFastaSequence.updateORFs(position + 2, charCounter + 2, charCounter % 3);
 
                     } else {
                         currentCodonLong = compress(buffer.getLong(p_pointerPos), isUnix);
-                        if (currentCodonLong == TAG || currentCodonLong == TAA || currentCodonLong == TGA) {
+                        if (currentCodonLong == NucByteConstants.TAG || currentCodonLong == NucByteConstants.TAA || currentCodonLong == NucByteConstants.TGA) {
                             currentFastaSequence.updateORFs(position + delta, charCounter + delta, charCounter % 3);
 
                         }
@@ -236,12 +213,19 @@ public class ORFFinder {
 
     }
 
+    // print some statistics
     public void printStats() {
         for (FastaSequence seq : fastaSequences) {
             seq.getStatistics();
         }
     }
 
+    /**
+     * Compresses a long (8 bytes)
+     * @param i the integer to compress
+     * @param isUnix whether to account for unix line feeds
+     * @return long compressed to 3 usable bytes
+     */
     private static long compress(long i, boolean isUnix) {
         if (isUnix) {
             return compressUnix(i);
@@ -250,10 +234,15 @@ public class ORFFinder {
         }
     }
 
+    /**
+     * remove linefeed from long at bitlevel using masks from NubyteConstants
+     * @param i
+     * @return
+     */
     private static long compressWindows(long i) {
-        if (MaskFactory.GetByte_1(i) == LF) {
+        if (MaskFactory.GetByte_1(i) == NucByteConstants.LF) {
             return CRLFCompress1(i);
-        } else if (MaskFactory.GetByte_2(i) == LF) {
+        } else if (MaskFactory.GetByte_2(i) == NucByteConstants.LF) {
             return CRLFCompress2(i);
         } else {
             return 0;
@@ -262,20 +251,19 @@ public class ORFFinder {
 
 
     private static long CRLFCompress1(long i) {
+        // compress from a + CR + LF b + + c TO a + b + c
         return (i & 0xFF) | ((i & 0xFFFF000000L) >> 16);
     }
 
-
     private static long CRLFCompress2(long i) {
-        // compress from a + b + CR + LF + c
+        // compress from a + b + CR + LF + c TO a + b + c
         return (i & 0xFFFF) | ((i & 0xFF00000000L) >> 16);
-
     }
 
     private static long compressUnix(long i) {
-        if (MaskFactory.GetByte_1(i) == LF) {
+        if (MaskFactory.GetByte_1(i) == NucByteConstants.LF) {
             return LFCompress1(i);
-        } else if (MaskFactory.GetByte_2(i) == LF) {
+        } else if (MaskFactory.GetByte_2(i) == NucByteConstants.LF) {
             return LFCompress2(i);
         } else {
             return 0;
@@ -284,11 +272,13 @@ public class ORFFinder {
 
 
     private static long LFCompress1(long i) {
+        // compress from a + CR + LF b + + c TO a + b + c
         return (i & 0xFF) | ((i & 0xFFFF0000) >> 8);
     }
 
 
     private static long LFCompress2(long i) {
+        // compress from a + b + CR + LF + c TO a + b + c
         return (i & 0xFF) | ((i & 0xFF000000) >> 8);
     }
 
@@ -313,6 +303,11 @@ public class ORFFinder {
     }
 
 
+    /**
+     * fetch the nucleotide sequence of an ORF from the file it originates from
+     * @param orf
+     * @return
+     */
     public String getOrf(ORF orf) {
 
         int c;
@@ -323,7 +318,7 @@ public class ORFFinder {
             for (int i = orf.getOffset(); i < endpos; i++) {
                 // todo change endpos in ORF
                 c = mainBuffer.get(i);
-                if (c >= A) { // skip whitechars
+                if (c >= NucByteConstants.A) { // skip whitechars
                     dna.append((char) c);
                 }
 
@@ -345,6 +340,11 @@ public class ORFFinder {
         return fastaSequences;
     }
 
+    /**
+     * time logger mostly for debug purposes
+     * @param startTime
+     * @param verbose       level of verbosity
+     */
     private void logTime(long startTime, int verbose) {
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
@@ -370,6 +370,10 @@ public class ORFFinder {
 
     }
 
+    /**
+     * funny time logger for estimated planck time
+     * @param startTime
+     */
     private void logPlanckTime(double startTime) {
         long endTime = System.nanoTime();
         double duration = (endTime - startTime);
@@ -377,28 +381,32 @@ public class ORFFinder {
         System.out.println("THAT ONLY TOOK " + planckSeconds.toPlainString() + " planckSeconds!");
     }
 
+    /**
+     * test to check all constants manually some in binary string some as integer.
+     */
     private void printConstants() {
         StringBuilder constants = new StringBuilder();
-        constants.append("A=").append(A);
-        constants.append("\nT=").append(T);
-        constants.append("\nC=").append(C);
-        constants.append("\nG=").append(G);
-        constants.append("\nATG=").append(ATG);
-        constants.append("\nTAG=").append(TAG);
-        constants.append("\nTAA=").append(TAA);
-        constants.append("\nTGA=").append(TGA);
-        constants.append("\nCRLF_CHECK_1=").append(CRLF_CHECK_1);
-        constants.append("\nCRLF_CHECK_2=").append(CRLF_CHECK_2);
-        constants.append("\nCRLF_CHECK_1BINARY=").append(Long.toBinaryString(CRLF_CHECK_1));
-        constants.append("\nCRLF_CHECK_2BINARY=").append(Long.toBinaryString(CRLF_CHECK_2));
-        constants.append("\nMASK_3=").append(MASK_3);
-        constants.append("\nMASK_5=").append(MASK_5);
-        constants.append("\nMASK_3BINARY=").append(Long.toBinaryString(MASK_3));
-        constants.append("\nMASK_5BINARY=").append(Long.toBinaryString(MASK_5));
+        constants.append("A=").append(NucByteConstants.A);
+        constants.append("\nT=").append(NucByteConstants.T);
+        constants.append("\nC=").append(NucByteConstants.C);
+        constants.append("\nG=").append(NucByteConstants.G);
+        constants.append("\nATG=").append(NucByteConstants.ATG);
+        constants.append("\nTAG=").append(NucByteConstants.TAG);
+        constants.append("\nTAA=").append(NucByteConstants.TAA);
+        constants.append("\nTGA=").append(NucByteConstants.TGA);
+        constants.append("\nCRLF_CHECK_1=").append(NucByteConstants.CRLF_CHECK_1);
+        constants.append("\nCRLF_CHECK_2=").append(NucByteConstants.CRLF_CHECK_2);
+        constants.append("\nCRLF_CHECK_1BINARY=").append(Long.toBinaryString(NucByteConstants.CRLF_CHECK_1));
+        constants.append("\nCRLF_CHECK_2BINARY=").append(Long.toBinaryString(NucByteConstants.CRLF_CHECK_2));
+        constants.append("\nMASK_3=").append(NucByteConstants.MASK_3);
+        constants.append("\nMASK_5=").append(NucByteConstants.MASK_5);
+        constants.append("\nMASK_3BINARY=").append(Long.toBinaryString(NucByteConstants.MASK_3));
+        constants.append("\nMASK_5BINARY=").append(Long.toBinaryString(NucByteConstants.MASK_5));
 
         System.out.println(constants.toString());
 
     }
+
 }
 
 

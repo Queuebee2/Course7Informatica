@@ -1,4 +1,4 @@
-package helpers;
+package orffinder;
 public class MaskFactory
 {
     public static byte GetByte_0(long u)
