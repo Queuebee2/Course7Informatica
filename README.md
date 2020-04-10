@@ -1,4 +1,4 @@
-# ORFFinder 1.0
+# ORFFinder 1.0.1
 Welcome to our repository.
 
 ### [Find latest releases here](https://github.com/Queuebee2/Course7Informatica/releases)
